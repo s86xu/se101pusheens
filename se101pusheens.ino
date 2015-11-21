@@ -96,7 +96,7 @@ long getPoten();
 short getAccel(int Axis);
 int Runner_Game(void);
 void OrbitOledPutNumber(int num);
-void LightLED(int n)
+void LightLED(int n);
 
 
 stat hygiene;// = { “hygiene”, poop, 50, 0, //insert function pointer name here};
@@ -519,28 +519,28 @@ void mini_game4(){
 /*---------------------------------------------------------------*/
 void LightLED(int n){
 	
-	if(n > 25){
-		GPIOPinWrite(LED1Port, LED1, LED1);
+	if(n >= 25){
+		GPIOPinWrite(LED4Port, LED4, LED4);
 	}else{
-		GPIOPinWrite(LED1Port, LED1, LOW);
+		GPIOPinWrite(LED4Port, LED4, LOW);
 	}
 	
-	if (n > 50){
+	if (n >= 50){
+		GPIOPinWrite(LED3Port, LED3, LED3);
+	}else{
+		GPIOPinWrite(LED3Port, LED3, LOW);
+	}
+	
+	if (n >= 75){
 		GPIOPinWrite(LED2Port, LED2, LED2);
 	}else{
 		GPIOPinWrite(LED2Port, LED2, LOW);
 	}
 	
-	if (n > 75){
-		GPIOPinWrite(LED3Port, LED3, LED3);
-	}else{
-		GPIOPinWrite(LED3Port, LED3, LED3);
-	}
-	
 	if (n >= 100){
-		GPIOPinWrite(LED4Port, LED4, LED4);
+		GPIOPinWrite(LED1Port, LED1, LED1);
 	}else{
-		GPIOPinWrite(LED4Port, LED4, LOW);
+		GPIOPinWrite(LED1Port, LED1, LOW);
 	}
 }
 
@@ -920,156 +920,5 @@ bool I2CGenIsNotIdle() {
 
   return !I2CMasterBusBusy(I2C0_BASE);
 
-}
-
-int Shit_Storm(void){
-  //-------images-----------
-  //char point[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
-  char point[] = {0x3C, 0xCA, 0x8D, 0x8B, 0x8D, 0x8B, 0xCE, 0x3C};  //poop
-  char player[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
-  
-  //------location-----------
-  int obsX[5], obsY[5];
-  int ptX[5], ptY[5];
-  int plX = 8, plY = 0;
-  
-  //gameplay values
-  int size = 8;
-  int spacing = 10*size;
-  
-  //Time-keeping values
-  int spd = 10;
-  int framerate = 1000/60;
-  int count = 0;
-  
-  //jump-stuff
-  int jumpspd = 13;
-  int jumptime = 0;
-  int jumpheight = 0;
-  //int jump = 0;
-  
-  int lose = 0;
-  int score = 0;
-  
-  //INTRODUCTION#############################################  
-  OrbitOledClear();
-  OrbitOledSetCursor(0, 0);
-  OrbitOledPutString("Runner Game");
-  OrbitOledSetCursor(0, 1);
-  OrbitOledPutString("Avoid: ");
-  OrbitOledSetCursor(0, 2);
-  OrbitOledPutString("Collect:");
-  OrbitOledSetCursor(0, 3);
-  OrbitOledPutString("Jump w\\:");
-  OrbitOledSetCursor(13, 3);
-  OrbitOledPutString("BTN");
-  
-  OrbitOledMoveTo(xMax-size+1, size);
-  OrbitOledPutBmp(size,size,obs);
-  
-  OrbitOledMoveTo(xMax-2*size+1, size*2);
-  OrbitOledPutBmp(size,size,point);
-  
-  OrbitOledUpdate();
-  
-  
-  do{
-        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 == BTN1);//while button is pressed
-  do{
-        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 != BTN1);//while button is not pressed
-  
-  
-  //MAIN GAME################################################
-  //initializing obstacles
-  for (int i = 0; i < 5; i++){
-    obsX[i] = plX + size + size + spacing + (spacing+size)*i;
-    obsY[i] = random((yMax/size))*size;
-  }
-
-  for (int i = 0; i < 5; i++){
-    ptX[i] = plX + size + size + spacing/2 + (spacing+size)*i;
-    ptY[i] = random((yMax/size))*size;
-  }
-
-  
-  while (!lose){//main game loop
-    if(!(count % framerate)){
-      //draw everything
-      OrbitOledClear();
-      
-      for(int i = 0; i < 5; i++){//drawing the obstacles
-        OrbitOledMoveTo(obsX[i], yMax - obsY[i] - size);
-        OrbitOledPutBmp(size,size,obs);
-      }
-      
-      for(int i = 0; i < 5; i++){//drawing the pellets? do we still need these?
-        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size);
-        OrbitOledPutBmp(size,size,point);
-      }
-      
-      OrbitOledMoveTo(plX, yMax-plY-size);
-      OrbitOledPutBmp(size,size,player);
-      //putting the score
-      OrbitOledSetCursor(6, 0);
-      OrbitOledPutString("Score: ");
-      OrbitOledPutNumber(score); 
-      
-      
-      OrbitOledUpdate();
-    }
-
-
-    //collision checks here, because why not?
-    for(int i = 0; i < 5; i++){
-       //'<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
-      if(((plY >= obsY[i] && plY < obsY[i]+size-1)||(plY+size-1 > obsY[i] && plY+size-1 <= obsY[i]+size-1))&&
-          ((plX >= obsX[i] && plX < obsX[i]+size-1)||(plX+size-1 > obsX[i] && plX+size-1 <= obsX[i]+size-1))){
-            lose = 1;
-            break;
-          }
-    }
-
-    for(int i = 0; i < 5; i++){
-      // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
-      if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
-          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
-            score++;
-            ptX[i] = -1;
-            break; 
-          }
-    }
-
-
-    if(!(count % spd)){//movement
-      for(int i = 0; i < 5; i++){//moving the obstacles
-        obsX[i] -= 1;
-        if (obsX[i] < 1){//resseting the obstacle to off the screen
-          obsX[i] = (i == 0) ? obsX[4]+size+spacing-1 : obsX[i-1]+size+spacing;
-          obsY[i] = random((yMax/size))*size;
-        }
-      }
-      
-      for(int i = 0; i < 5; i++){//moving the points
-        ptX[i] -= 1;
-        if (ptX[i] < 1){//resseting the obstacle to off the screen
-          ptX[i] = (i == 0) ? ptX[4]+size+spacing-1 : ptX[i-1]+size+spacing;
-          ptY[i] = random((yMax/size))*size;
-        }
-      }
-      
-    }
-    
-
-    lBtn1 = GPIOPinRead(BTN2Port, BTN2);
-    if(lBtn1 == BTN2){
-      lose = 1;
-    }
-    count ++;
-    delay(1);//should probably use a clock and measure time between frames, this is probably good enough
-  }
-  delay(500);
-  return score;
 }
 
