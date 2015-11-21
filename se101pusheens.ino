@@ -189,7 +189,7 @@ void main_menu(){
 		LightLED(hunger.currentValue);
 		
 		if (lBtn1){
-			hunger.game;
+			hunger.currentValue += min(hunger.game, 100 - hunger.currentValue);
 		}
 	}
 	else if(poten <= 1638){
