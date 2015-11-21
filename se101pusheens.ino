@@ -189,6 +189,7 @@ void main_menu(){
 		LightLED(hunger.currentValue);
 		
 		if (lBtn1){
+			LightLED(0);
 			hunger.currentValue += min(hunger.game, 100 - hunger.currentValue);
 		}
 	}
