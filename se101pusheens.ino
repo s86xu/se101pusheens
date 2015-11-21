@@ -419,7 +419,7 @@ int Runner_Game(void){
   
   int lose = 0;
   int score = 0;
-  int pt_val = 1;
+  int pt_val = 2;
   
   //INTRODUCTION#############################################  
   OrbitOledClear();
@@ -1121,15 +1121,16 @@ int Shit_Storm(void){
       for(int i = 0; i < mxp; i++){//moving the points
         if (ptY[i] > 0){
           ptY[i] -= 1;
-        }else if (ptY[i] < 0){
+        }else if (ptY[i] == 0){
+          
+          
+        }
+        else{//pt[Y] == 0)
           ptX[i] = random((xMax/size))*size;
-          //find the highest poop, and place above it
-          int highest = yMax;
-          for (int j= 0; j < mxp; j++){
-            if (ptY[j] > highest){
-              highest = ptY[j];
-            }
-          }
+          ptY[i] = yMax;//find the highest poop, and place above it
+          for (int j= 0; j < mxp; j++)
+            if (ptY[j] > ptY[i])
+              ptY[i] = ptY[j];
           ptY[i] = highest + size + spacing; 
         }
       }
