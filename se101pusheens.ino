@@ -1087,17 +1087,13 @@ int Shit_Storm(void){
     //poop falling movement
     if(!(count % spd)){ 
       for(int i = 0; i < 5; i++){//moving the points
-        ptX[i] -= 1;
-        if (ptX[i] < 1){//resseting the obstacle to off the screen
-          ptY[i] = (i == 0) ? ptX[mxp -1]+size+spacing-1 : ptX[i-1]+size+spacing;
-          ptY[i] = random((yMax/size))*size;
-        }
+        ptY[i] -= 1;
       }
     }
     
     //moving the player
     poten = getPoten();
-    plX = (int) ((double)poten / 4095)*(yMax-size);
+    plX = (int) (((double)poten / 4095)*(xMax-size));
     
     lBtn1 = GPIOPinRead(BTN2Port, BTN2);
     if(lBtn1 == BTN2){
