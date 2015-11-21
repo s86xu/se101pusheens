@@ -440,7 +440,6 @@ int Runner_Game(void){
       
     }
     
-    
     //Jumping stuff
     if (plY == jumpheight){
       lBtn1 = GPIOPinRead(BTN1Port, BTN1);
@@ -491,6 +490,10 @@ int Runner_Game(void){
     }
     */
     
+    lBtn1 = GPIOPinRead(BTN2Port, BTN2);
+    if(lBtn1 == BTN2){
+      lose = 1;
+    }
     count ++;
     delay(1);//should probably use a clock and measure time between frames, this is probably good enough
   }
