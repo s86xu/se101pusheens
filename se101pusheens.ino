@@ -8,6 +8,9 @@ extern"C" {
 #include <OrbitOledChar.h>
 #include <OrbitOledGrph.h>
 }
+
+// commmmmment easter egg number 1;
+
 /* ------------------------------------------------------------ */
 /*   			 Local Type Definitions   	 */
 /* ------------------------------------------------------------ */
@@ -827,9 +830,12 @@ char I2CGenTransmit(char * pbData, int cSize, bool fRW, char bAddr) {
 
 }
 
+// comment easter egg #2
+
 bool I2CGenIsNotIdle() {
 
   return !I2CMasterBusBusy(I2C0_BASE);
 
 }
 //Test Line Will
+// spookey #3
