@@ -296,23 +296,42 @@ void num_stat(){
         while(GPIOPinRead(BTN2Port, BTN2)){}
 
 	while(!GPIOPinRead(BTN2Port, BTN2)){
-		OrbitOledSetCursor(0,0);
-		OrbitOledPutString("Fod Value: ");
-		OrbitOledPutNumber(hunger.currentValue);
+		if(GPIOPinRead(BTN1Port, BTN1)){
+			
+			OrbitOledSetCursor(0,0);
+			OrbitOledPutString("Fod H Scr: ");
+			OrbitOledPutNumber(hunger.highScore);
 		
-		OrbitOledSetCursor(0, 1);
-		OrbitOledPutString("Hyg Value: ");
-		OrbitOledPutNumber(hygiene.currentValue);
+			OrbitOledSetCursor(0, 1);
+			OrbitOledPutString("Hyg H Scr: ");
+			OrbitOledPutNumber(hygiene.highScore);
 		
 		
-		OrbitOledSetCursor(0 ,2);
-		OrbitOledPutString("Slp Value: ");
-		OrbitOledPutNumber(sleepiness.currentValue);
+			OrbitOledSetCursor(0 ,2);
+			OrbitOledPutString("Slp H Scr: ");
+			OrbitOledPutNumber(sleepiness.highScore);
 		
-		OrbitOledSetCursor(0, 3);
-		OrbitOledPutString("Lov Value: ");
-		OrbitOledPutNumber(love.currentValue);
-	
+			OrbitOledSetCursor(0, 3);
+			OrbitOledPutString("Lov H Scr: ");
+			OrbitOledPutNumber(love.highScore);
+		}else{
+		
+			OrbitOledSetCursor(0,0);
+			OrbitOledPutString("Fod Value: ");
+			OrbitOledPutNumber(hunger.currentValue);
+			
+			OrbitOledSetCursor(0, 1);
+			OrbitOledPutString("Hyg Value: ");
+			OrbitOledPutNumber(hygiene.currentValue);
+		
+			OrbitOledSetCursor(0 ,2);
+			OrbitOledPutString("Slp Value: ");
+			OrbitOledPutNumber(sleepiness.currentValue);
+		
+			OrbitOledSetCursor(0, 3);
+			OrbitOledPutString("Lov Value: ");
+			OrbitOledPutNumber(love.currentValue);
+		}
 		OrbitOledUpdate();
 	}
 	
