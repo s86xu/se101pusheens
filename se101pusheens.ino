@@ -182,19 +182,23 @@ void main_menu(){
 // modified this part but still needs testing 
 
 	if (face_y > main_yMax) {
-  	face_y = main_yMax;
+		face_y = main_yMax;
+		velocity_y *= -1;
 	}
     
 	if (face_y < main_yMin) {
-  	face_y = main_yMin;
+		face_y = main_yMin;
+		velocity_y *= -1;
 	}
     
 	if (face_x > main_xMax) {
-  	face_x = main_xMax;
+		face_x = main_xMax;
+		velocity_x *= -1;
 	}
     
 	if (face_x < main_xMin) {
-  	face_x = main_xMin;
+		face_x = main_xMin;
+		velocity_x *= -1;
 	}
 	
 	face_x += velocity_x;
