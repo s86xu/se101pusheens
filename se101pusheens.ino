@@ -301,36 +301,44 @@ void num_stat(){
 			OrbitOledSetCursor(0,0);
 			OrbitOledPutString("Fod H Scr: ");
 			OrbitOledPutNumber(hunger.highScore);
+			OrbitOledPutString("  ");
 		
 			OrbitOledSetCursor(0, 1);
 			OrbitOledPutString("Hyg H Scr: ");
 			OrbitOledPutNumber(hygiene.highScore);
+			OrbitOledPutString("  ");
 		
 		
 			OrbitOledSetCursor(0 ,2);
 			OrbitOledPutString("Slp H Scr: ");
 			OrbitOledPutNumber(sleepiness.highScore);
+			OrbitOledPutString("  ");
 		
 			OrbitOledSetCursor(0, 3);
 			OrbitOledPutString("Lov H Scr: ");
 			OrbitOledPutNumber(love.highScore);
+			OrbitOledPutString("  ");
 		}else{
 		
 			OrbitOledSetCursor(0,0);
 			OrbitOledPutString("Fod Value: ");
 			OrbitOledPutNumber(hunger.currentValue);
+			OrbitOledPutString("  ");
 			
 			OrbitOledSetCursor(0, 1);
 			OrbitOledPutString("Hyg Value: ");
 			OrbitOledPutNumber(hygiene.currentValue);
+			OrbitOledPutString("  ");
 		
 			OrbitOledSetCursor(0 ,2);
 			OrbitOledPutString("Slp Value: ");
 			OrbitOledPutNumber(sleepiness.currentValue);
+			OrbitOledPutString("  ");
 		
 			OrbitOledSetCursor(0, 3);
 			OrbitOledPutString("Lov Value: ");
 			OrbitOledPutNumber(love.currentValue);
+			OrbitOledPutString("  ");
 		}
 		OrbitOledUpdate();
 	}
