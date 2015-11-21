@@ -980,15 +980,19 @@ bool I2CGenIsNotIdle() {
 }
 
 int Shit_Storm(void){
+  //----------constants-----
+  const int mxp = 10;
+  long poten;
+  
   //-------images-----------
-  char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
+  //char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
   char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //large food
   //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
   char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
   
   //------location-----------
-  int obsX[5], obsY[5];
-  int ptX[5], ptY[5];
+  //int obsX[5], obsY[5];
+  int ptX[mxp], ptY[mxp];
   int plX = 8, plY = 0;
   
   //gameplay values
@@ -999,12 +1003,6 @@ int Shit_Storm(void){
   int spd = 10;
   int framerate = 1000/60;
   int count = 0;
-  
-  //jump-stuff
-  int jumpspd = 13;
-  int jumptime = 0;
-  int jumpheight = 0;
-  //int jump = 0;
   
   int lose = 0;
   int score = 0;
@@ -1019,12 +1017,9 @@ int Shit_Storm(void){
   OrbitOledSetCursor(0, 2);
   OrbitOledPutString("Collect:");
   OrbitOledSetCursor(0, 3);
-  OrbitOledPutString("Jump w\\:");
-  OrbitOledSetCursor(13, 3);
-  OrbitOledPutString("BTN");
-  
-  OrbitOledMoveTo(xMax-size+1, size);
-  OrbitOledPutBmp(size,size,obs);
+  OrbitOledPutString("Move w\\:");
+  OrbitOledSetCursor(12, 3);
+  OrbitOledPutString("DIAL");
   
   OrbitOledMoveTo(xMax-2*size+1, size*2);
   OrbitOledPutBmp(size,size,point);
@@ -1042,14 +1037,10 @@ int Shit_Storm(void){
   
   //MAIN GAME################################################
   //initializing obstacles
-  for (int i = 0; i < 5; i++){
-    obsX[i] = plX + size + size + spacing + (spacing+size)*i;
-    obsY[i] = random((yMax/size))*size;
-  }
 
   for (int i = 0; i < 5; i++){
-    ptX[i] = plX + size + size + spacing/2 + (spacing+size)*i;
-    ptY[i] = random((yMax/size))*size;
+    ptY[i] = plY + size + size + (spacing+size)*i;
+    ptX[i] = random((xMax/size))*size;
   }
 
   
@@ -1058,17 +1049,12 @@ int Shit_Storm(void){
       //draw everything
       OrbitOledClear();
       
-      for(int i = 0; i < 5; i++){//drawing the obstacles
-        OrbitOledMoveTo(obsX[i], yMax - obsY[i] - size);
-        OrbitOledPutBmp(size,size,obs);
-      }
-      
-      for(int i = 0; i < 5; i++){//drawing the pellets? do we still need these?
-        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size);
+      for(int i = 0; i < 5; i++){//drawing the poop? do we still need these?
+        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size + 1);
         OrbitOledPutBmp(size,size,point);
       }
       
-      OrbitOledMoveTo(plX, yMax-plY-size);
+      OrbitOledMoveTo(plX, yMax-plY-size + 1);
       OrbitOledPutBmp(size,size,runner);
       //putting the score
       OrbitOledSetCursor(6, 0);
@@ -1080,95 +1066,30 @@ int Shit_Storm(void){
     }
 
 
-    //collision checks here, because why not?
-    for(int i = 0; i < 5; i++){
-       //'<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
-      if(((plY >= obsY[i] && plY < obsY[i]+size-1)||(plY+size-1 > obsY[i] && plY+size-1 <= obsY[i]+size-1))&&
-          ((plX >= obsX[i] && plX < obsX[i]+size-1)||(plX+size-1 > obsX[i] && plX+size-1 <= obsX[i]+size-1))){
-            lose = 1;
-            break;
-          }
-    }
-
+    //collision checks here, because why not
     for(int i = 0; i < 5; i++){
       // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
       if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
           ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
             score+= pt_val;
-            ptX[i] = -1;
-            break; 
+            ptY[i] = -1;
           }
     }
 
-
-    if(!(count % spd)){//movement
-      for(int i = 0; i < 5; i++){//moving the obstacles
-        obsX[i] -= 1;
-        if (obsX[i] < 1){//resseting the obstacle to off the screen
-          obsX[i] = (i == 0) ? obsX[4]+size+spacing-1 : obsX[i-1]+size+spacing;
-          obsY[i] = random((yMax/size))*size;
-        }
-      }
-      
+    //poop falling movement
+    if(!(count % spd)){ 
       for(int i = 0; i < 5; i++){//moving the points
         ptX[i] -= 1;
         if (ptX[i] < 1){//resseting the obstacle to off the screen
-          ptX[i] = (i == 0) ? ptX[4]+size+spacing-1 : ptX[i-1]+size+spacing;
+          ptY[i] = (i == 0) ? ptX[mxp -1]+size+spacing-1 : ptX[i-1]+size+spacing;
           ptY[i] = random((yMax/size))*size;
         }
       }
-      
     }
     
-    //Jumping stuff
-    if (plY == jumpheight){
-      lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-      if(lBtn1 == BTN1) {//button is pressed
-        if(jumpheight < (yMax/size)*size-size){
-          jumpheight = plY + size;
-        }else{
-          jumpheight = plY - size;
-        }
-      }
-      else{
-        if(jumpheight > 0){
-          jumpheight = plY - size;
-        }
-      }
-        
-    }else if(!((count - jumptime)%jumpspd)){//the player isn't at an acceptable height, and it's time to increment!!!!
-      if (plY < jumpheight){
-         plY++;
-      }
-      else{ //(plY >= jumpheight)
-        plY--;
-      }
-    }
-    
-    /*
-    //Jumping stuff Mk 1 (aka flying)
-    lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-    if(lBtn1 == BTN1) {//button is pressed
-      if (!jump){
-        jump = 1;
-        jumptime = count;
-      }
-    }else if(jump){
-      jump = 0;
-    }
-    
-    if(!((count - jumptime)%jumpspd)){
-      if(jump){
-        plY++;
-        if (plY > yMax - size){
-          plY = yMax - size;
-        }
-      }
-      else if (plY > 0){
-        plY --;
-      }
-    }
-    */
+    //moving the player
+    poten = getPoten();
+    plX = (int) ((double)poten / 4095)*(yMax-size);
     
     lBtn1 = GPIOPinRead(BTN2Port, BTN2);
     if(lBtn1 == BTN2){
