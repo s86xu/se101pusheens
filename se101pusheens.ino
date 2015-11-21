@@ -174,15 +174,25 @@ void main_menu(){
 	int velocity_y = 1;
 	int face_x = xMax/2; 
 	int face_y = (main_yMax - main_yMin)/2;
+	int frame_num = 0;
 
 	
 	while(1){
   
-		//debug = hunger.currentValue;
-    // Poten operations with menu selecting
+	// Poten operations with menu selecting
 	poten = getPoten();
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-
+	
+	frame_num++;
+	
+	
+	if(frame_num % 500){
+		hygiene.currentValue -= 5;
+		hunger.currentValue -= 5;
+		love.currentValue -= 5;
+		sleepiness.currentValue -= 5;
+	}
+	
 	while(GPIOPinRead(BTN2Port, BTN2)){}
 	
 	
