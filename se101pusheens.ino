@@ -134,34 +134,6 @@ void loop()
     main_menu();
 }
 
-void OrbitOledPutNumber(int num){
-  int length = 1;
-  int tempnum = num/10;
-  int i;
-  
-  char *strnum;
-  
-  while(tempnum > 0){
-    tempnum = tempnum/10;
-    length++;
-  }
-  
-  strnum = (char*)malloc(sizeof(char)*length+1);
-  
-  i = 1;
-  tempnum = num;
-  strnum[length] = '\0';
-  do{
-    strnum[length-i] = '0' + (tempnum%10);
-    i++;
-    tempnum = tempnum / 10;
-  }while(tempnum > 0);
-  
-  OrbitOledPutString(strnum);
-  free(strnum);
-  
-}
-
 /*----------------------------------------------------------*/
 /* Main menu function separated from the loop */
 /* use the mini_games() for the mini game coding */
@@ -491,6 +463,35 @@ void mini_game4(){
 }
 
 /* ------------------------------------------------------------ */
+
+void OrbitOledPutNumber(int num){
+  int length = 1;
+  int tempnum = num/10;
+  int i;
+  
+  char *strnum;
+  
+  while(tempnum > 0){
+    tempnum = tempnum/10;
+    length++;
+  }
+  
+  strnum = (char*)malloc(sizeof(char)*length+1);
+  
+  i = 1;
+  tempnum = num;
+  strnum[length] = '\0';
+  do{
+    strnum[length-i] = '0' + (tempnum%10);
+    i++;
+    tempnum = tempnum / 10;
+  }while(tempnum > 0);
+  
+  OrbitOledPutString(strnum);
+  free(strnum);
+  
+}
+
 /***    CheckSwitches()
  **
  **    Parameters:
