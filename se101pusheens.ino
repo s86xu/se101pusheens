@@ -181,22 +181,32 @@ void main_menu(){
 	
 
 	if(poten <= 819){
-		hygiene.icon = poop_inv;
-		hunger.icon = food;
-	}
-	else if(poten <= 1638){
 		hygiene.icon = poop;
 		hunger.icon = food_inv;
+		sleepiness.icon = Sleep;
+		love.icon = heart;
 	}
-	else if(poten <= 2457){
+	else if(poten <= 1638){
+		hygiene.icon = poop_inv;
 		hunger.icon = food;
 		sleepiness.icon = Sleep;
+		love.icon = heart;
+	}
+	else if(poten <= 2457){
+		hygiene.icon = poop;
+		hunger.icon = food;
+		sleepiness.icon = Sleep;
+		love.icon = heart;
 	}
 	else if(poten <= 3276){
+		hygiene.icon = poop;
+		hunger.icon = food;
 		sleepiness.icon = Sleep_inv;
 		love.icon = heart;
 	}
 	else{
+		hygiene.icon = poop;
+		hunger.icon = food;
 		sleepiness.icon = Sleep;
 		love.icon = heart_inv;
 	}
