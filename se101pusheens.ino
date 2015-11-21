@@ -165,7 +165,7 @@ void loop()
 
 
 void main_menu(){
- 	
+ 	long lBtn1;
 	int main_xMax = xMax-33; // 13 + 20
 	int main_xMin = 13;
 	int main_yMax = yMax-20;
@@ -178,19 +178,24 @@ void main_menu(){
 	while(1){
     // Poten operations with menu selecting
 	poten = getPoten();
-	
+	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 
 	if(poten <= 819){
 		hygiene.icon = poop;
 		hunger.icon = food_inv;
 		sleepiness.icon = Sleep;
 		love.icon = heart;
+		
+		if (lBtn1){
+			Runner_Game();
+		}
 	}
 	else if(poten <= 1638){
 		hygiene.icon = poop_inv;
 		hunger.icon = food;
 		sleepiness.icon = Sleep;
 		love.icon = heart;
+		
 	}
 	else if(poten <= 2457){
 		hygiene.icon = poop;
