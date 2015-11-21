@@ -9,7 +9,6 @@ extern"C" {
 #include <OrbitOledGrph.h>
 }
 
-// commmmmment easter egg number 1;
 
 /* ------------------------------------------------------------ */
 /*   			 Local Type Definitions   	 */
@@ -97,7 +96,13 @@ long getPoten();
 short getAccel(int Axis);
 int Runner_Game(void);
 void OrbitOledPutNumber(int num);
-	
+
+
+stat hygiene;// = { “hygiene”, poop, 50, 0, //insert function pointer name here};
+stat hunger;// = {“hunger”,  food, 50, 0, //insert function pointer name here};
+stat sleepiness;// = { “sleep”,  Sleep, 50, 0, //insert function pointer name here};
+stat love;// = {“love”,  heart, 50, 0, //insert function pointer name here};
+
 void setup()
 {
 	DeviceInit();
@@ -110,13 +115,10 @@ void setup()
 	xMin = 0;
 	xMax = 127;
 
-	stat hygiene = { “hygiene”, poop, 50, 0, //insert function pointer name here};
-	stat hunger = {“hunger”,  food, 50, 0, //insert function pointer name here};
-	stat sleepiness = { “sleep”,  Sleep, 50, 0, //insert function pointer name here};
-	stat love = {“love”,  heart, 50, 0, //insert function pointer name here};
-
-
-    
+	hunger.name = "hunger";
+        hunger.icon = food;
+        hunger.currentValue = 50;
+        hunger.highScore = 0;  
 }
 
     
@@ -134,6 +136,8 @@ void loop()
 	
     main_menu();
 }
+
+
 
 void OrbitOledPutNumber(int num){
   int length = 1;
@@ -180,7 +184,7 @@ void main_menu(){
 	int face_x = xMax/2; 
 	int face_y = (main_yMax - main_yMin)/2;
 	
-	
+	while(1){
     // Poten operations with menu selecting
 	poten = getPoten();
 	
@@ -246,6 +250,7 @@ void main_menu(){
     
 	OrbitOledUpdate();
 	delay(30);
+  }
 }
 
 
