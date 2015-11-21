@@ -185,15 +185,20 @@ void main_menu(){
 	
 	frame_num++;
 	
+
 	
-	if(frame_num % 500){
+	if(!(frame_num % 800)){
+                //nice flash when it decays, remove?
+                LightLED(100);
+                delay(100);
+                LightLED(0);
+                delay(100);
 		hygiene.currentValue -= 5;
 		hunger.currentValue -= 5;
 		love.currentValue -= 5;
 		sleepiness.currentValue -= 5;
 	}
 	
-	while(GPIOPinRead(BTN2Port, BTN2)){}
 	
 	
 	if(GPIOPinRead(BTN2Port, BTN2)){
@@ -1022,11 +1027,11 @@ int Shit_Storm(void){
   
   //gameplay values
   int size = 8;
-  int spacing = 10*size;
+  int spacing = size;
   int maxpoop = 3;
   
   //Time-keeping values
-  int spd = 10;
+  int spd = 16;
   int framerate = 1000/60;
   int count = 0;
   
@@ -1109,6 +1114,8 @@ int Shit_Storm(void){
       for(int i = 0; i < mxp; i++){//moving the points
         if (ptY[i] > 0){
           ptY[i] -= 1;
+        }else if (ptY[i] < 0){
+          ptY[i] = (i == 0) ? ptY[mxp-1]+size+spacing-1 : ptY[i-1]+size+spacing; 
         }
       }
     }
@@ -1126,6 +1133,8 @@ int Shit_Storm(void){
   }
   if (lBtn1 != BTN2){
     delay(500);
+  }else{
+    while(GPIOPinRead(BTN2Port, BTN2)){}
   }
   return score;
 }
