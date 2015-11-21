@@ -192,7 +192,8 @@ void main_menu(){
 		LightLED(hunger.currentValue);
 
 		if (lBtn1){
-			hunger.currentValue += _min(hunger.game(), 100 - hunger.currentValue);
+			LightLED(0);
+			hunger.currentValue += _min(Shit_Storm(), 100 - hunger.currentValue);
 		}
 	}
 	else if(poten <= 1638){
@@ -331,6 +332,7 @@ int Runner_Game(void){
   
   int lose = 0;
   int score = 0;
+  int pt_val = 1;
   
   //INTRODUCTION#############################################  
   OrbitOledClear();
@@ -356,10 +358,10 @@ int Runner_Game(void){
   
   do{
         lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 == BTN1);//while button is pressed
+  }while(lBtn1 == BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is pressed
   do{
         lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 != BTN1);//while button is not pressed
+  }while(lBtn1 != BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is not pressed
   
   
   //MAIN GAME################################################
@@ -416,7 +418,7 @@ int Runner_Game(void){
       // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
       if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
           ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
-            score++;
+            score+= pt_val;
             ptX[i] = -1;
             break; 
           }
@@ -499,7 +501,9 @@ int Runner_Game(void){
     count ++;
     delay(1);//should probably use a clock and measure time between frames, this is probably good enough
   }
-  delay(500);
+  if (lBtn1 != BTN2){
+    delay(500);
+  }
   return score;
 }
 
@@ -927,10 +931,8 @@ bool I2CGenIsNotIdle() {
 
 int Shit_Storm(void){
   //-------images-----------
-  char obs[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-  //char obs[] = {0x00, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x00};
-  //char point[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
-  char point[] = {0x3C, 0xCA, 0x8D, 0x8B, 0x8D, 0x8B, 0xCE, 0x3C};  //large food
+  char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
+  char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //large food
   //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
   char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
   
@@ -956,6 +958,7 @@ int Shit_Storm(void){
   
   int lose = 0;
   int score = 0;
+  int pt_val = 1;
   
   //INTRODUCTION#############################################  
   OrbitOledClear();
@@ -981,10 +984,10 @@ int Shit_Storm(void){
   
   do{
         lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 == BTN1);//while button is pressed
+  }while(lBtn1 == BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is pressed
   do{
         lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 != BTN1);//while button is not pressed
+  }while(lBtn1 != BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is not pressed
   
   
   //MAIN GAME################################################
@@ -1041,7 +1044,7 @@ int Shit_Storm(void){
       // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
       if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
           ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
-            score++;
+            score+= pt_val;
             ptX[i] = -1;
             break; 
           }
@@ -1124,8 +1127,8 @@ int Shit_Storm(void){
     count ++;
     delay(1);//should probably use a clock and measure time between frames, this is probably good enough
   }
-  delay(500);
+  if (lBtn1 != BTN2){
+    delay(500);
+  }
   return score;
 }
-
-
