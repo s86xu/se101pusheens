@@ -245,7 +245,7 @@ void main_menu(){
 	OrbitOledPutBmp(13, 16, hunger.icon);
     
 	OrbitOledMoveTo(xMax - 13, 0);
-	OrbitOledPutBmp(13, 16, sleep.icon);
+	OrbitOledPutBmp(13, 16, sleepiness.icon);
     
 	OrbitOledMoveTo(xMax - 13, yMax - 16);
 	OrbitOledPutBmp(13, 16, love.icon);
