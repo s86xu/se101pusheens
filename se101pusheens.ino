@@ -54,7 +54,7 @@ typedef struct {
 	char *icon;
 	int currentValue;
 	int highScore;
-	int *( game(void) );
+	int (*game)(void);
 }stat;
 
 //images
@@ -115,10 +115,31 @@ void setup()
 	xMin = 0;
 	xMax = 127;
 
-	hunger.name = "hunger";
+	hunger.name = "Hunger";
         hunger.icon = food;
         hunger.currentValue = 50;
-        hunger.highScore = 0;  
+        hunger.highScore = 0;
+        hunger.game = &Runner_Game;
+        
+        hygiene.name = "hygiene";
+        hygiene.icon = poop;
+        hygiene.currentValue = 50;
+        hygiene.highScore = 0;
+        hygiene.game = &Runner_Game;
+        
+        sleepiness.name = "Sleepiness";
+        sleepiness.icon = Sleep;
+        sleepiness.currentValue = 50;
+        sleepiness.highScore = 0;
+        sleepiness.game = &Runner_Game;
+        
+        love.name = "love";
+        love.icon = heart;
+        love.currentValue = 50;
+        love.highScore = 0;
+        love.game = &Runner_Game;
+        
+        
 }
 
     
