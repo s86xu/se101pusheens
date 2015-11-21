@@ -134,6 +134,7 @@ void loop()
     
 	
     main_menu();
+	delay(30);
 }
 
 
@@ -221,7 +222,6 @@ void main_menu(){
 	OrbitOledPutBmp(20, 20, faceHole);
     
 	OrbitOledUpdate();
-	delay(30);
 }
 
 
