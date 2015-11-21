@@ -210,7 +210,7 @@ void main_menu(){
 
 		if (lBtn1){
 			LightLED(0);
-			hunger.currentValue += _min(Shit_Storm(), 100 - hunger.currentValue);
+			hunger.currentValue += _min(Runner_Game(), 100 - hunger.currentValue);
 		}
 	}
 	else if(poten <= 1638){
@@ -220,6 +220,11 @@ void main_menu(){
 		love.icon = heart;
 		
 		LightLED(hygiene.currentValue);
+		
+		if (lBtn1){
+			LightLED(0);
+			hygiene.currentValue += _min(Shit_Storm(), 100 - hygiene.currentValue);
+		}
 		
 	}
 	else if(poten <= 2457){
