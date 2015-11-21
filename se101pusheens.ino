@@ -96,6 +96,7 @@ long getPoten();
 short getAccel(int Axis);
 int Runner_Game(void);
 void OrbitOledPutNumber(int num);
+void LightLED(int n)
 
 
 stat hygiene;// = { “hygiene”, poop, 50, 0, //insert function pointer name here};
@@ -186,6 +187,8 @@ void main_menu(){
 		sleepiness.icon = Sleep;
 		love.icon = heart;
 		
+		LightLED(hunger.currentValue);
+		
 		if (lBtn1){
 			Runner_Game();
 		}
@@ -196,24 +199,32 @@ void main_menu(){
 		sleepiness.icon = Sleep;
 		love.icon = heart;
 		
+		LightLED(hygiene.currentValue);
+		
 	}
 	else if(poten <= 2457){
 		hygiene.icon = poop;
 		hunger.icon = food;
 		sleepiness.icon = Sleep;
 		love.icon = heart;
+		
+		LightLED((hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/4);
 	}
 	else if(poten <= 3276){
 		hygiene.icon = poop;
 		hunger.icon = food;
 		sleepiness.icon = Sleep_inv;
 		love.icon = heart;
+		
+		LightLED(sleepiness.currentValue);
 	}
 	else{
 		hygiene.icon = poop;
 		hunger.icon = food;
 		sleepiness.icon = Sleep;
 		love.icon = heart_inv;
+		
+		LightLED(love.currentValue);
 	}
 // modified this part but still needs testing 
 
@@ -502,6 +513,36 @@ void mini_game3(){
 void mini_game4(){
 
 }
+
+/*---------------------------------------------------------------*/
+void LightLED(int n){
+	
+	if(n > 25){
+		GPIOPinWrite(LED1Port, LED1, LED1);
+	}else{
+		GPIOPinWrite(LED1Port, LED1, LOW);
+	}
+	
+	if (n > 50){
+		GPIOPinWrite(LED2Port, LED2, LED2);
+	}else{
+		GPIOPinWrite(LED2Port, LED2, LOW);
+	}
+	
+	if (n > 75){
+		GPIOPinWrite(LED3Port, LED3, LED3);
+	}else{
+		GPIOPinWrite(LED3Port, LED3, LED3);
+	}
+	
+	if (n >= 100){
+		GPIOPinWrite(LED4Port, LED4, LED4);
+	}else{
+		GPIOPinWrite(LED4Port, LED4, LOW);
+	}
+}
+
+
 
 /* ------------------------------------------------------------ */
 
