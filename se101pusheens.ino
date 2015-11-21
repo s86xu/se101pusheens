@@ -183,6 +183,8 @@ void main_menu(){
 	poten = getPoten();
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 
+	while(GPIOPinRead(BTN2Port, BTN2)){}
+	
 	
 	if(GPIOPinRead(BTN2Port, BTN2)){
 		num_stat();
