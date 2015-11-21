@@ -176,6 +176,7 @@ void main_menu(){
 	int face_x = xMax/2; 
 	int face_y = (main_yMax - main_yMin)/2;
 	int frame_num = 0;
+	int score = 0;
 
 	
 	while(1){
@@ -206,6 +207,7 @@ void main_menu(){
 		num_stat();
 	}
 	
+	// Menu Selection Startv -----------------------------
 	if(poten <= 819){
 		hygiene.icon = poop;
 		hunger.icon = food_inv;
@@ -216,7 +218,9 @@ void main_menu(){
 
 		if (lBtn1){
 			LightLED(0);
-			hunger.currentValue += _min(Runner_Game(), 100 - hunger.currentValue);
+			score = Runner_Game();
+			hunger.currentValue += _min(score, 100 - hunger.currentValue);
+			hunger.highScore = _max(score, hunger.highScore);
 		}
 	}
 	else if(poten <= 1638){
@@ -229,7 +233,9 @@ void main_menu(){
 		
 		if (lBtn1){
 			LightLED(0);
-			hygiene.currentValue += _min(Shit_Storm(), 100 - hygiene.currentValue);
+			score = Shit_Storm()
+			hygiene.currentValue += _min(score, 100 - hygiene.currentValue);
+			hygiene.highScore = _max(score, hygiene.highScore);
 		}
 		
 	}
