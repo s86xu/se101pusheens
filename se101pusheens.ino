@@ -184,7 +184,7 @@ void main_menu(){
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 
 	
-	if(GPIOPinRead(BTN2Port, BTN2);){
+	if(GPIOPinRead(BTN2Port, BTN2)){
 		num_stat();
 	}
 	
@@ -293,27 +293,30 @@ void num_stat(){
 	
 	OrbitOledClear();
 	
+        while(GPIOPinRead(BTN2Port, BTN2)){}
+
 	while(!GPIOPinRead(BTN2Port, BTN2)){
 		OrbitOledSetCursor(0,0);
-		OrbitOledPutString("Food Value: ");
+		OrbitOledPutString("Fod Value: ");
 		OrbitOledPutNumber(hunger.currentValue);
 		
-		OrbitOledSetCursor(1, 4);
-		OrbitOledPutString("Hygiene Value: ");
+		OrbitOledSetCursor(0, 1);
+		OrbitOledPutString("Hyg Value: ");
 		OrbitOledPutNumber(hygiene.currentValue);
 		
 		
-		OrbitOledSetCursor(2 ,0);
-		OrbitOledPutString("Sleep Value: ");
+		OrbitOledSetCursor(0 ,2);
+		OrbitOledPutString("Slp Value: ");
 		OrbitOledPutNumber(sleepiness.currentValue);
 		
-		OrbitOledSetCursor(3, 4);
-		OrbitOledPutString("Love Value: ");
+		OrbitOledSetCursor(0, 3);
+		OrbitOledPutString("Lov Value: ");
 		OrbitOledPutNumber(love.currentValue);
 	
 		OrbitOledUpdate();
 	}
 	
+        while(GPIOPinRead(BTN2Port, BTN2)){}
 }
 
 
