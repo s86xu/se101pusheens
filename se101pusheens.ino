@@ -183,6 +183,11 @@ void main_menu(){
 	poten = getPoten();
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 
+	
+	if(GPIOPinRead(BTN2Port, BTN2);){
+		num_stat();
+	}
+	
 	if(poten <= 819){
 		hygiene.icon = poop;
 		hunger.icon = food_inv;
@@ -285,6 +290,29 @@ void main_menu(){
 /* displays all the stats in numerical form*/
 /* -------------------------------------------*/
 void num_stat(){
+	
+	OrbitOledClear();
+	
+	while(!GPIOPinRead(BTN2Port, BTN2)){
+		OrbitOledSetCursor(0,0);
+		OrbitOledPutString("Food Value: ");
+		OrbitOledPutNumber(hunger.currentValue);
+		
+		OrbitOledSetCursor(1, 4);
+		OrbitOledPutString("Hygiene Value: ");
+		OrbitOledPutNumber(hygiene.currentValue);
+		
+		
+		OrbitOledSetCursor(2 ,0);
+		OrbitOledPutString("Sleep Value: ");
+		OrbitOledPutNumber(sleepiness.currentValue);
+		
+		OrbitOledSetCursor(3, 4);
+		OrbitOledPutString("Love Value: ");
+		OrbitOledPutNumber(love.currentValue);
+	
+		OrbitOledUpdate();
+	}
 	
 }
 
