@@ -233,7 +233,7 @@ void main_menu(){
 		
 		if (lBtn1){
 			LightLED(0);
-			score = Shit_Storm()
+			score = Shit_Storm();
 			hygiene.currentValue += _min(score, 100 - hygiene.currentValue);
 			hygiene.highScore = _max(score, hygiene.highScore);
 		}
@@ -1037,10 +1037,11 @@ int Shit_Storm(void){
   //gameplay values
   int size = 8;
   int spacing = size;
-  int maxpoop = 3;
+  int poopmax = 3;
+  int poopcount = 0;
   
   //Time-keeping values
-  int spd = 16;
+  int spd = 13;
   int framerate = 1000/60;
   int count = 0;
   
@@ -1059,7 +1060,7 @@ int Shit_Storm(void){
   OrbitOledSetCursor(12, 3);
   OrbitOledPutString("DIAL");
   
-  OrbitOledMoveTo(xMax-2*size+1, size*2);
+  OrbitOledMoveTo(xMax-2*size+1, size*1);
   OrbitOledPutBmp(size,size,point);
   
   OrbitOledUpdate();
@@ -1111,8 +1112,9 @@ int Shit_Storm(void){
             if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
           ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))&&
           ptY[i] < size/2){
-            score+= pt_val;
-            ptY[i] = -size;
+            score += pt_val;
+            if(ptY[i] == 0) poopcount -= 1;
+            ptY[i] = -size;//to signal to reset in the movement block
           }
     }
 
@@ -1121,17 +1123,19 @@ int Shit_Storm(void){
       for(int i = 0; i < mxp; i++){//moving the points
         if (ptY[i] > 0){
           ptY[i] -= 1;
-        }else if (ptY[i] == 0){
-          
-          
-        }
-        else{//pt[Y] == 0)
+          if (ptY[i] == 0){//if it's zero
+            poopcount += 1;
+            if (poopcount >= poopmax){
+              lose = 1;
+            }
+          }
+        }else if (ptY[i] < 0){
           ptX[i] = random((xMax/size))*size;
           ptY[i] = yMax;//find the highest poop, and place above it
           for (int j= 0; j < mxp; j++)
             if (ptY[j] > ptY[i])
               ptY[i] = ptY[j];
-          ptY[i] = highest + size + spacing; 
+          ptY[i] += size + spacing; 
         }
       }
     }
