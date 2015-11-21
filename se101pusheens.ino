@@ -8,9 +8,6 @@ extern"C" {
 #include <OrbitOledChar.h>
 #include <OrbitOledGrph.h>
 }
-///poooperdooper ///what is happening
-//mark 2
-
 /* ------------------------------------------------------------ */
 /*   			 Local Type Definitions   	 */
 /* ------------------------------------------------------------ */
@@ -95,10 +92,8 @@ char faceHole[] = {0xFF, 0x01, 0x01, 0x01, 0xE1, 0xC1, 0x01, 0x01, 0x01, 0x01, 0
 void DeviceInit();
 long getPoten();
 short getAccel(int Axis);
-
-
-
-
+int Runner_Game(void);
+void OrbitOledPutNumber(int num);
 	
 void setup()
 {
@@ -135,11 +130,35 @@ void loop()
     
 	
     main_menu();
-	delay(30);
 }
 
-
-
+void OrbitOledPutNumber(int num){
+  int length = 1;
+  int tempnum = num/10;
+  int i;
+  
+  char *strnum;
+  
+  while(tempnum > 0){
+    tempnum = tempnum/10;
+    length++;
+  }
+  
+  strnum = (char*)malloc(sizeof(char)*length+1);
+  
+  i = 1;
+  tempnum = num;
+  strnum[length] = '\0';
+  do{
+    strnum[length-i] = '0' + (tempnum%10);
+    i++;
+    tempnum = tempnum / 10;
+  }while(tempnum > 0);
+  
+  OrbitOledPutString(strnum);
+  free(strnum);
+  
+}
 
 /*----------------------------------------------------------*/
 /* Main menu function separated from the loop */
@@ -223,6 +242,7 @@ void main_menu(){
 	OrbitOledPutBmp(20, 20, faceHole);
     
 	OrbitOledUpdate();
+	delay(30);
 }
 
 
@@ -244,6 +264,204 @@ void num_stat(){
 
 void mini_game1(){
 
+}int Runner_Game(void){
+  long lBtn1;
+  
+  //-------images-----------
+  char obs[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  //char obs[] = {0x00, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x00};
+  //char point[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
+  char point[] = {0x3C, 0xCA, 0x8D, 0x8B, 0x8D, 0x8B, 0xCE, 0x3C};  //large food
+  //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
+  char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
+  
+  //------location-----------
+  int obsX[5], obsY[5];
+  int ptX[5], ptY[5];
+  int plX = 8, plY = 0;
+  
+  //gameplay values
+  int size = 8;
+  int spacing = 10*size;
+  
+  //Time-keeping values
+  int spd = 10;
+  int framerate = 1000/60;
+  int count = 0;
+  
+  //jump-stuff
+  int jumpspd = 13;
+  int jumptime = 0;
+  int jumpheight = 0;
+  //int jump = 0;
+  
+  int lose = 0;
+  int score = 0;
+  
+  //INTRODUCTION#############################################
+  OrbitOledClear();
+  OrbitOledSetCursor(0, 0);
+  OrbitOledPutString("Runner Game");
+  OrbitOledSetCursor(0, 1);
+  OrbitOledPutString("Avoid: ");
+  OrbitOledSetCursor(0, 2);
+  OrbitOledPutString("Collect:");
+  OrbitOledSetCursor(0, 3);
+  OrbitOledPutString("Jump w\\:");
+  OrbitOledSetCursor(13, 3);
+  OrbitOledPutString("BTN");
+  
+  OrbitOledMoveTo(xMax-size+1, size);
+  OrbitOledPutBmp(size,size,obs);
+  
+  OrbitOledMoveTo(xMax-2*size+1, size*2);
+  OrbitOledPutBmp(size,size,point);
+  
+  OrbitOledUpdate();
+  
+  do{
+        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+  }while(lBtn1 != BTN1);//while button is not pressed
+  
+  
+  //MAIN GAME################################################
+  //initializing obstacles
+  for (int i = 0; i < 5; i++){
+    obsX[i] = plX + size + size + spacing + (spacing+size)*i;
+    obsY[i] = random((yMax/size))*size;
+  }
+
+  for (int i = 0; i < 5; i++){
+    ptX[i] = plX + size + size + spacing/2 + (spacing+size)*i;
+    //ptY[i] = random((yMax/size))*size;
+    ptY[i] = 0;
+  }
+
+  
+  while (!lose){//main game loop
+    if(!(count % framerate)){
+      //draw everything
+      OrbitOledClear();
+      
+      for(int i = 0; i < 5; i++){//drawing the obstacles
+        OrbitOledMoveTo(obsX[i], yMax - obsY[i] - size);
+        OrbitOledPutBmp(size,size,obs);
+      }
+      
+      for(int i = 0; i < 5; i++){//drawing the pellets? do we still need these?
+        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size);
+        OrbitOledPutBmp(size,size,point);
+      }
+      
+      OrbitOledMoveTo(plX, yMax-plY-size);
+      OrbitOledPutBmp(size,size,runner);
+      //putting the score
+      OrbitOledSetCursor(6, 0);
+      OrbitOledPutString("Score: ");
+      OrbitOledPutNumber(score); 
+      
+      
+      OrbitOledUpdate();
+    }
+
+
+    //collision checks here, because why not?
+    for(int i = 0; i < 5; i++){
+       //'<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
+      if(((plY >= obsY[i] && plY < obsY[i]+size-1)||(plY+size-1 > obsY[i] && plY+size-1 <= obsY[i]+size-1))&&
+          ((plX >= obsX[i] && plX < obsX[i]+size-1)||(plX+size-1 > obsX[i] && plX+size-1 <= obsX[i]+size-1))){
+            lose = 1;
+            break;
+          }
+    }
+
+    for(int i = 0; i < 5; i++){
+      // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
+      if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
+          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
+            score++;
+            ptX[i] = -1;
+            break; 
+          }
+    }
+
+
+    if(!(count % spd)){//movement
+      for(int i = 0; i < 5; i++){//moving the obstacles
+        obsX[i] -= 1;
+        if (obsX[i] < 1){//resseting the obstacle to off the screen
+          obsX[i] = (i == 0) ? obsX[4]+size+spacing-1 : obsX[i-1]+size+spacing;
+          obsY[i] = random((yMax/size))*size;
+        }
+      }
+      
+      for(int i = 0; i < 5; i++){//moving the obstacles
+        ptX[i] -= 1;
+        if (ptX[i] < 1){//resseting the obstacle to off the screen
+          ptX[i] = (i == 0) ? ptX[4]+size+spacing-1 : ptX[i-1]+size+spacing;
+          //ptY[i] = random((yMax/size))*size;
+          ptY[i] = 0;
+        }
+      }
+      
+    }
+    
+    
+    //Jumping stuff
+    if (plY == jumpheight){
+      lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+      if(lBtn1 == BTN1) {//button is pressed
+        if(jumpheight < (yMax/size)*size-size){
+          jumpheight = plY + size;
+        }else{
+          jumpheight = plY - size;
+        }
+      }
+      else{
+        if(jumpheight > 0){
+          jumpheight = plY - size;
+        }
+      }
+        
+    }else if(!((count - jumptime)%jumpspd)){//the player isn't at an acceptable height, and it's time to increment!!!!
+      if (plY < jumpheight){
+         plY++;
+      }
+      else{ //(plY >= jumpheight)
+        plY--;
+      }
+    }
+    
+    /*
+    //Jumping stuff Mk 1 (aka flying)
+    lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+    if(lBtn1 == BTN1) {//button is pressed
+      if (!jump){
+        jump = 1;
+        jumptime = count;
+      }
+    }else if(jump){
+      jump = 0;
+    }
+    
+    if(!((count - jumptime)%jumpspd)){
+      if(jump){
+        plY++;
+        if (plY > yMax - size){
+          plY = yMax - size;
+        }
+      }
+      else if (plY > 0){
+        plY --;
+      }
+    }
+    */
+    
+    count ++;
+    delay(1);//should probably use a clock and measure time between frames, this is probably good enough
+  }
+  delay(500);
+  return score;
 }
 
 /* --------------------------------------*/
