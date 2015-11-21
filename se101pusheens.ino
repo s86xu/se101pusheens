@@ -98,6 +98,7 @@ int Runner_Game(void);
 void OrbitOledPutNumber(int num);
 void LightLED(int n);
 int _min(int a, int b){return a < b ? a : b;}
+int _max(int a, int b){return a > b ? a : b;}
 
 stat hygiene;// = { “hygiene”, poop, 50, 0, //insert function pointer name here};
 stat hunger;// = {“hunger”,  food, 50, 0, //insert function pointer name here};
@@ -583,6 +584,8 @@ int Runner_Game(void){
   }
   if (lBtn1 != BTN2){
     delay(500);
+  }else{
+    while(GPIOPinRead(BTN2Port, BTN2)){}
   }
   return score;
 }
@@ -1042,10 +1045,8 @@ int Shit_Storm(void){
   //INTRODUCTION#############################################  
   OrbitOledClear();
   OrbitOledSetCursor(0, 0);
-  OrbitOledPutString("Runner Game");
+  OrbitOledPutString("Catching Game");
   OrbitOledSetCursor(0, 1);
-  OrbitOledPutString("Avoid: ");
-  OrbitOledSetCursor(0, 2);
   OrbitOledPutString("Collect:");
   OrbitOledSetCursor(0, 3);
   OrbitOledPutString("Move w\\:");
@@ -1115,7 +1116,15 @@ int Shit_Storm(void){
         if (ptY[i] > 0){
           ptY[i] -= 1;
         }else if (ptY[i] < 0){
-          ptY[i] = (i == 0) ? ptY[mxp-1]+size+spacing-1 : ptY[i-1]+size+spacing; 
+          ptX[i] = random((xMax/size))*size;
+          //find the highest poop, and place above it
+          int highest = yMax;
+          for (int j= 0; j < mxp; j++){
+            if (ptY[j] > highest){
+              highest = ptY[j];
+            }
+          }
+          ptY[i] = highest + size + spacing; 
         }
       }
     }
