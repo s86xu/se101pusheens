@@ -319,7 +319,7 @@ int Runner_Game(void){
   int lose = 0;
   int score = 0;
   
-  //INTRODUCTION#############################################
+  //INTRODUCTION#############################################  
   OrbitOledClear();
   OrbitOledSetCursor(0, 0);
   OrbitOledPutString("Runner Game");
@@ -340,6 +340,10 @@ int Runner_Game(void){
   
   OrbitOledUpdate();
   
+  
+  do{
+        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+  }while(lBtn1 == BTN1);//while button is pressed
   do{
         lBtn1 = GPIOPinRead(BTN1Port, BTN1);
   }while(lBtn1 != BTN1);//while button is not pressed
