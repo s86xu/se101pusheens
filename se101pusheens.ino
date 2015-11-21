@@ -1018,6 +1018,7 @@ int Shit_Storm(void){
   //gameplay values
   int size = 8;
   int spacing = 10*size;
+  int maxpoop = 3;
   
   //Time-keeping values
   int spd = 10;
@@ -1058,7 +1059,7 @@ int Shit_Storm(void){
   //MAIN GAME################################################
   //initializing obstacles
 
-  for (int i = 0; i < 5; i++){
+  for (int i = 0; i < mxp; i++){
     ptY[i] = plY + size + size + (spacing+size)*i;
     ptX[i] = random((xMax/size))*size;
   }
@@ -1069,7 +1070,7 @@ int Shit_Storm(void){
       //draw everything
       OrbitOledClear();
       
-      for(int i = 0; i < 5; i++){//drawing the poop? do we still need these?
+      for(int i = 0; i < mxp; i++){//drawing the poop? do we still need these?
         OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size + 1);
         OrbitOledPutBmp(size,size,point);
       }
@@ -1087,19 +1088,23 @@ int Shit_Storm(void){
 
 
     //collision checks here, because why not
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < mxp; i++){
       // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
-      if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
-          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))){
+      //can only collect when they are on the ground, adds some challenge
+            if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
+          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))&&
+          ptY[i] < size/2){
             score+= pt_val;
-            ptY[i] = -1;
+            ptY[i] = -size;
           }
     }
 
     //poop falling movement
     if(!(count % spd)){ 
-      for(int i = 0; i < 5; i++){//moving the points
-        ptY[i] -= 1;
+      for(int i = 0; i < mxp; i++){//moving the points
+        if (ptY[i] > 0){
+          ptY[i] -= 1;
+        }
       }
     }
     
