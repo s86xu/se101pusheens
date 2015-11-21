@@ -47,7 +47,7 @@ char  chY0Addr = 0x34;
 char  chZ0Addr = 0x36;
 int y, yMin, yMax;
 int x, xMin, xMax;
-
+long lBtn1;
 
 typedef struct {
 	char *name;
@@ -282,9 +282,12 @@ void num_stat(){
 
 void mini_game1(){
 
-}int Runner_Game(void){
-  long lBtn1;
-  
+}
+/* --------------------------------------*/
+/* hunger stat */
+/* collect food from dropping foods while avoiding stuff */
+/* -------------------------------------------*/
+int Runner_Game(void){
   //-------images-----------
   char obs[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   //char obs[] = {0x00, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x7E, 0x00};
@@ -351,8 +354,7 @@ void mini_game1(){
 
   for (int i = 0; i < 5; i++){
     ptX[i] = plX + size + size + spacing/2 + (spacing+size)*i;
-    //ptY[i] = random((yMax/size))*size;
-    ptY[i] = 0;
+    ptY[i] = random((yMax/size))*size;
   }
 
   
@@ -413,12 +415,11 @@ void mini_game1(){
         }
       }
       
-      for(int i = 0; i < 5; i++){//moving the obstacles
+      for(int i = 0; i < 5; i++){//moving the points
         ptX[i] -= 1;
         if (ptX[i] < 1){//resseting the obstacle to off the screen
           ptX[i] = (i == 0) ? ptX[4]+size+spacing-1 : ptX[i-1]+size+spacing;
-          //ptY[i] = random((yMax/size))*size;
-          ptY[i] = 0;
+          ptY[i] = random((yMax/size))*size;
         }
       }
       
@@ -480,14 +481,6 @@ void mini_game1(){
   }
   delay(500);
   return score;
-}
-
-/* --------------------------------------*/
-/* hunger stat */
-/* collect food from dropping foods while avoiding stuff */
-/* -------------------------------------------*/
-void mini_game2(){
-
 }
 
 /* --------------------------------------*/
