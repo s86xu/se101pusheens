@@ -873,7 +873,7 @@ int Petting_Game() {
 		OrbitOledClear();
 	}
 	
-	OrbitOledClear;
+	OrbitOledClear();
 	return score;
 }
 
