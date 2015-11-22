@@ -809,7 +809,7 @@ int Petting_Game() {
 	OrbitOledUpdate();
 	
 	while(1) {
-		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		lBtn1 = GPIOPinRead(BTN2Port, BTN2);
 		if (lBtn1) {
 			OrbitOledClear();
 			delay(1000);
@@ -818,8 +818,8 @@ int Petting_Game() {
 	}
 
 	
-	while (lBtn1 != BTN1) {
-		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+	while (lBtn1 != BTN2) {
+		lBtn1 = GPIOPinRead(BTN2Port, BTN2);
 		
 		//setDrawing();----------------------------------------------
                 //draw the pos of faceHole
