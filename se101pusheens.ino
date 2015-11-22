@@ -803,7 +803,7 @@ int Petting_Game() {
 		
 		//draw the score
 		OrbitOledSetCursor(0,0);
-		OrbitOledPutString("Score: ")
+		OrbitOledPutString("Score: ");
 		OrbitOledPutNumber(score);
 		
 		//draw a range within which user must pet
@@ -812,7 +812,7 @@ int Petting_Game() {
 	}	
 	
 	void checkForValidPetting() {
-		if (lowerPettingPound < xFace && xFace < upperPettingBound) {
+		if (lowerPettingBound < xFace+10 && xFace < upperPettingBound) {
 			if (score < maxScore) {
 				score++;
 				OrbitOledSetCursor(1, 0);
@@ -850,6 +850,7 @@ int Petting_Game() {
 			checkforValidPetting();
 		}
 		
+		OrbitOledUpdate();
 		delay(1);
 		OrbitOledClear();
 	}
