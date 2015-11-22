@@ -818,7 +818,7 @@ int Petting_Game() {
 	}
 
 	
-	while (lBtn1 != 1) {
+	while (lBtn1 != BTN1) {
 		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 		
 		//setDrawing();----------------------------------------------
@@ -871,6 +871,7 @@ int Petting_Game() {
 		OrbitOledClear();
 	}
 	
+	OrbitOledClear;
 	return score;
 }
 
