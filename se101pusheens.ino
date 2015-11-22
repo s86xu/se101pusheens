@@ -172,9 +172,10 @@ void main_menu(){
 	int main_yMax = yMax-20;
 	int main_yMin = 0;
 	int velocity_x = 1;
-	int velocity_y = 1;
+	float velocity_y;
+	int velocity_y_dir = 1;
 	int face_x = xMax/2; 
-	int face_y = (main_yMax - main_yMin)/2;
+	float face_y = (main_yMax - main_yMin)/2;
 	int frame_num = 0;
 	int score = 0;
 
@@ -206,6 +207,8 @@ void main_menu(){
 	if(GPIOPinRead(BTN2Port, BTN2)){
 		num_stat();
 	}
+	
+	float velocity_y = (hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/200;
 	
 	// Menu Selection Startv -----------------------------
 	if(poten <= 819){
@@ -267,12 +270,12 @@ void main_menu(){
 
 	if (face_y > main_yMax) {
 		face_y = main_yMax;
-		velocity_y *= -1;
+		velocity_y_dir *= -1;
 	}
     
 	if (face_y < main_yMin) {
 		face_y = main_yMin;
-		velocity_y *= -1;
+		velocity_y_dir *= -1;
 	}
     
 	if (face_x > main_xMax) {
@@ -286,7 +289,7 @@ void main_menu(){
 	}
 	
 	face_x += velocity_x;
-	face_y += velocity_y;
+	face_y += velocity_y*velocity_y_dir;
 	
     
 	OrbitOledClear();
@@ -303,7 +306,7 @@ void main_menu(){
 	OrbitOledMoveTo(xMax - 13, yMax - 16);
 	OrbitOledPutBmp(13, 16, love.icon);
     
-	OrbitOledMoveTo(face_x, face_y);
+	OrbitOledMoveTo(face_x, (int)face_y);
 	OrbitOledPutBmp(20, 20, faceHole);
         
 	OrbitOledUpdate();
