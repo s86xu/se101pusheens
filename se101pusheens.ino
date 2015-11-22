@@ -146,17 +146,6 @@ void setup()
     
 void loop()
 {
-	// put your main code here, to run repeatedly
-	
-	accel = getAccel(chX0Addr);
-	//x = (int)(((double)poten / 4095)*128);
-	x += (int)(((double)accel));
-    
-	accel = getAccel(chY0Addr);
-	y += (int)(((double)accel / 255)*16/7.5);
-    
-	
-    main_menu();
 }
 
 /*----------------------------------------------------------*/
@@ -669,26 +658,33 @@ void LightLED(int n){
 
 void OrbitOledPutNumber(int num){
   int length = 1;
-  int tempnum = num/10;
+  int tempnum;
   int i;
   
   char *strnum;
+  
+  tempnum = num < 0 ? -num : num;
   
   while(tempnum > 0){
     tempnum = tempnum/10;
     length++;
   }
   
-  strnum = (char*)malloc(sizeof(char)*length+1);
+  strnum = (char*)malloc(sizeof(char)*length+1  + 
+            num < 0 ? 1:0);
   
   i = 1;
-  tempnum = num;
+  tempnum = num < 0 ? -num : num;;
   strnum[length] = '\0';
   do{
     strnum[length-i] = '0' + (tempnum%10);
     i++;
     tempnum = tempnum / 10;
   }while(tempnum > 0);
+  
+  if(num < 0){
+    strnum[0] = '-';
+  }
   
   OrbitOledPutString(strnum);
   free(strnum);
@@ -1064,7 +1060,7 @@ int Shit_Storm(void){
   int poopcount = 0;
   
   //Time-keeping values
-  int spd = 13;
+  int spd = 12;
   int framerate = 1000/60;
   int count = 0;
   
