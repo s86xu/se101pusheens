@@ -109,6 +109,7 @@ void DeviceInit();
 long getPoten();
 short getAccel(int Axis);
 int Runner_Game(void);
+int Petting_Game(void);
 void OrbitOledPutNumber(int num);
 void LightLED(int n);
 int _min(int a, int b){return a < b ? a : b;}
