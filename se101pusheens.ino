@@ -123,11 +123,9 @@ void setup()
 {
 	DeviceInit();
 	
-	y = 16;
 	yMin = 0;
 	yMax = 31;
     
-	x= 64;
 	xMin = 0;
 	xMax = 127;
 
@@ -142,7 +140,7 @@ void setup()
     hygiene.icon = poop;
     hygiene.currentValue = 50;
     hygiene.highScore = 0;
-    hygiene.game = &Runner_Game;
+    hygiene.game = &Shit_Storm;
         
     sleepiness.name = "Sleepiness";
     sleepiness.icon = Sleep;
@@ -154,7 +152,7 @@ void setup()
     love.icon = heart;
     love.currentValue = 50;
     love.highScore = 0;
-    love.game = &Runner_Game;    
+    love.game = &Petting_Game;    
         
 }
 
@@ -290,6 +288,13 @@ void main_menu(){
 		love.icon = heart_inv;
 		
 		LightLED(love.currentValue);
+		
+		if (lBtn1) {
+				LightLED(0);
+				score = Petting_Game();
+				love.currentValue += _min(score, 100 - love.currentValue);
+				love.highScore = _max(score, hygiene.highScore);
+		}
 	}
 
 	// Bound Check for Facehole
@@ -754,8 +759,101 @@ void mini_game3(){
 /* lovestat */
 /* petting. */
 /* -------------------------------------------*/
-void mini_game4(){
+int Petting_Game() {
+	//setting initial conditions 
+	int score = 0;
+	int minScore = 0;
+	int maxScore = 999;
+	int xFace = xMax / 2;
+	int yFace = 11;
+	int xSpeed = 2;
+	int lowerPettingBound = 40;
+	int upperPettingBound = 88;
+	long lBtn1;
+	
+	OrbitOledClear();
+	OrbitOledSetCursor(0, 0);
+	OrbitOledPutString("Petting Game");
+	
+	OrbitOledSetCursor(0, 1);
+	OrbitOledPutString("Goal: Pet him!");
+	
+	OrbitOledSetCursor(0, 2);
+	OrbitOledPutString("Pet by: SHAKING");
+	
+	OrbitOledSetCursor(0, 3);
+	OrbitOledPutString("Quit with: BTN");
 
+	OrbitOledUpdate();
+	
+	while(1) {
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		if (lBtn1) {
+			OrbitOledClear();
+			delay(1000);
+			break;
+		}
+	}
+	
+	void setDrawing() {
+		//draw the pos of faceHole
+		OrbitOledMoveTo(xFace, yFace);
+		OrbitOledPutBmp(20, 20, faceHole);
+		
+		//draw the score
+		OrbitOledSetCursor(0,0);
+		OrbitOledPutString("Score: ")
+		OrbitOledPutNumber(score);
+		
+		//draw a range within which user must pet
+		OrbitOledSetCursor(0, 4);
+		OrbitOledPutString("____|______|____");
+	}	
+	
+	void checkForValidPetting() {
+		if (lowerPettingPound < xFace && xFace < upperPettingBound) {
+			if (score < maxScore) {
+				score++;
+				OrbitOledSetCursor(1, 0);
+				OrbitOledPutString("Yay!")
+				delay(2000);
+			}
+		}
+		
+		else {
+			if (score > minScore) {
+				score--;
+				OrbitOledSetCursor(1, 0);
+				OrbitOledPutString("Oops!");
+				delay(2000);
+			}
+		}
+	}
+	
+	void updateFacePos() {
+		if (xFace > xMax || xFace < xMin) {
+			xSpeed *= -1;
+		}
+		
+		xFace += xSpeed;
+		
+	}
+	
+	while (lBtn1 != 1) {
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		
+		setDrawing();
+		updateFacePos();
+		
+		if (getAccel(chY0Addr) < 0){
+			checkforValidPetting();
+		}
+		
+		delay(1);
+		OrbitOledClear();
+	}
+	
+	return score;
 }
 
 /*---------------------------------------------------------------*/
