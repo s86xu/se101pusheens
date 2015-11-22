@@ -244,15 +244,15 @@ void main_menu(){
 	
 	// Facehole icon switch 
 	if(general.currentValue/4 >= 75){
-		general.icon = face[4];
+		general.icon = faceHoles[4];
 	}else if(general.currentValue/4 >= 50){
-		general.icon = face[3];
+		general.icon = faceHoles[3];
 	}else if(general.currentValue/4 >= 25){
-		general.icon = face[2];
+		general.icon = faceHoles[2];
 	}else if(general.currentValue/4 > 0){
-		general.icon = face[1];
+		general.icon = faceHoles[1];
 	}else{
-		general.icon = face[0];
+		general.icon = faceHoles[0];
 	}
 	
 	// Menu Selection Start -----------------------------
@@ -822,8 +822,9 @@ int Petting_Game() {
 		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 		
 		//setDrawing();----------------------------------------------
-
-
+                //draw the pos of faceHole
+		OrbitOledMoveTo(xFace, yFace);
+		OrbitOledPutBmp(20, 20, faceHole);
 		
 		//draw the score
 		OrbitOledSetCursor(0,0);
@@ -833,14 +834,10 @@ int Petting_Game() {
 		//draw a range within which user must pet
 		OrbitOledSetCursor(0, 4);
 		OrbitOledPutString("____|______|____");
-
-		//draw the pos of faceHole
-		OrbitOledMoveTo(xFace, yFace);
-		OrbitOledPutBmp(20, 20, faceHole);
-
                 //end setDrawing---------------------------------------------
-                //updateFacePos----------------------------------------------
-		if (xFace > xMax || xFace < xMin) {
+                
+                //updateFacePos-----------------------------------------------
+                if (xFace > xMax || xFace < xMin) {
 			xSpeed *= -1;
 		}
 		
@@ -848,15 +845,13 @@ int Petting_Game() {
 		//end UpdateFacePos-------------------------------------------
 
 		if (getAccel(chY0Addr) < 0){
-			//checkforValidPetting();-----------------------------
-            if (lowerPettingBound < xFace && xFace < upperPettingBound) {
-					  
-				if (score < maxScore) {
-					score++;
-					OrbitOledSetCursor(1, 0);
-					OrbitOledPutString("Yay!");
-					delay(2000);
-				}
+		  //checkforValidPetting();--------------------------------
+                if (lowerPettingBound < xFace && xFace < upperPettingBound) {
+			if (score < maxScore) {
+				score++;
+				OrbitOledSetCursor(1, 0);
+				OrbitOledPutString("Yay!");
+				delay(2000);
 			}
 		}
 		
@@ -868,11 +863,10 @@ int Petting_Game() {
 				delay(2000);
 			}
 		}
-                   //end CheckforValidPetting-------------------------------
+                  //end CheckforValidPetting-------------------------------
 		}
-		
-		OrbitOledUpdate();
 
+		OrbitOledUpdate();
 		delay(1);
 		OrbitOledClear();
 	}
