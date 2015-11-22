@@ -809,7 +809,7 @@ int Petting_Game() {
 	OrbitOledUpdate();
 	
 	while(1) {
-		lBtn1 = GPIOPinRead(BTN2Port, BTN2);
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 		if (lBtn1) {
 			OrbitOledClear();
 			delay(1000);
