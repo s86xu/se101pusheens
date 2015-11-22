@@ -118,6 +118,7 @@ stat hygiene;// = { “hygiene”, poop, 50, 0, //insert function pointer name h
 stat hunger;// = {“hunger”,  food, 50, 0, //insert function pointer name here};
 stat sleepiness;// = { “sleep”,  Sleep, 50, 0, //insert function pointer name here};
 stat love;// = {“love”,  heart, 50, 0, //insert function pointer name here};
+stat general; // for facehole
 
 void setup()
 {
@@ -156,6 +157,11 @@ void setup()
     love.highScore = 0;
     love.game = &Runner_Game;    
         
+	general.name = "general";
+    general.icon = faceHoles[0];
+    general.currentValue = 50;
+    general.highScore = 0;
+    general.game = NULL; 
 }
 
 // Start of Loop
@@ -191,6 +197,8 @@ void main_menu(){
 	// Poten operations with menu selecting
 	poten = getPoten();
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+	
+	general.currentValue = hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue;
 	
 	
 	// Frame counting and Decay Mechanic
@@ -233,7 +241,21 @@ void main_menu(){
 		num_stat();
 	}
 	
-	float velocity_y = (hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/200.0;
+	float velocity_y = general.currentValue/200.0;
+	
+	
+	// Facehole icon switch 
+	if(general.currentValue/4 >= 75){
+		general.icon = face[4];
+	}else if(general.currentValue/4 >= 50){
+		general.icon = face[3];
+	}else if(general.currentValue/4 >= 25){
+		general.icon = face[2];
+	}else if(general.currentValue/4 > 0){
+		general.icon = face[1];
+	}else{
+		general.icon = face[0];
+	}
 	
 	// Menu Selection Start -----------------------------
 	if(poten <= 819){
@@ -273,7 +295,7 @@ void main_menu(){
 		sleepiness.icon = Sleep;
 		love.icon = heart;
 		
-		LightLED((hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/4);
+		LightLED(general.currentValue/4);
 	}
 	else if(poten <= 3276){
 		hygiene.icon = poop;
@@ -333,7 +355,7 @@ void main_menu(){
 	OrbitOledPutBmp(13, 16, love.icon);
     
 	OrbitOledMoveTo(face_x, (int)face_y);
-	OrbitOledPutBmp(20, 20, faceHoles[3]);
+	OrbitOledPutBmp(20, 20, general.icon);
         
 	OrbitOledUpdate();
 	delay(30);
