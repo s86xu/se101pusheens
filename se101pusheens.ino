@@ -146,6 +146,7 @@ void setup()
     
 void loop()
 {
+  main_menu();
 }
 
 /*----------------------------------------------------------*/
@@ -179,7 +180,7 @@ void main_menu(){
 	
 
 	
-	if(!(frame_num % 800)){
+	if(!(frame_num % 100)){
                 //nice flash when it decays, remove?
                 LightLED(100);
                 delay(100);
@@ -663,18 +664,23 @@ void OrbitOledPutNumber(int num){
   
   char *strnum;
   
-  tempnum = num < 0 ? -num : num;
+  if(num < 0){
+    length++;
+    tempnum = -num/10;
+  }else{
+    tempnum = num/10; 
+  }
   
   while(tempnum > 0){
     tempnum = tempnum/10;
     length++;
   }
+
   
-  strnum = (char*)malloc(sizeof(char)*length+1  + 
-            num < 0 ? 1:0);
+  strnum = (char*)malloc(sizeof(char)*(length+1));
   
   i = 1;
-  tempnum = num < 0 ? -num : num;;
+  tempnum = num < 0 ? -num : num;
   strnum[length] = '\0';
   do{
     strnum[length-i] = '0' + (tempnum%10);
