@@ -196,10 +196,30 @@ void main_menu(){
                 delay(100);
                 LightLED(0);
                 delay(100);
-		hygiene.currentValue -= 5;
-		hunger.currentValue -= 5;
-		love.currentValue -= 5;
-		sleepiness.currentValue -= 5;
+		
+		if (hygiene.currentValue > 5){
+			hygiene.currentValue -= 5;
+		}else{
+			hygiene.currentValue = 0;
+		}
+		
+		if (hunger.currentValue > 5){
+			hunger.currentValue -= 5;
+		}else{
+			hunger.currentValue = 0;
+		}
+		
+		if (love.currentValue > 5){
+			love.currentValue -= 5;
+		}else{
+			love.currentValue = 0;
+		}
+		
+		if (sleepiness.currentValue > 5){
+			sleepiness.currentValue -= 5;
+		}else{
+			sleepiness.currentValue = 0;
+		}
 	}
 	
 	
@@ -208,7 +228,7 @@ void main_menu(){
 		num_stat();
 	}
 	
-	float velocity_y = (hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/200;
+	float velocity_y = (hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/200.0;
 	
 	// Menu Selection Startv -----------------------------
 	if(poten <= 819){
