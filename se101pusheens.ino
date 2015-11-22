@@ -315,7 +315,7 @@ void main_menu(){
 				LightLED(0);
 				score = Petting_Game();
 				love.currentValue += _min(score, 100 - love.currentValue);
-				love.highScore = _max(score, hygiene.highScore);
+				love.highScore = _max(score, love.highScore);
 		}
 	}
 
