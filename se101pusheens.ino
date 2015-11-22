@@ -109,6 +109,7 @@ void DeviceInit();
 long getPoten();
 short getAccel(int Axis);
 int Runner_Game(void);
+int Petting_Game(void);
 void OrbitOledPutNumber(int num);
 void LightLED(int n);
 int _min(int a, int b){return a < b ? a : b;}
@@ -124,11 +125,9 @@ void setup()
 {
 	DeviceInit();
 	
-	y = 16;
 	yMin = 0;
 	yMax = 31;
     
-	x= 64;
 	xMin = 0;
 	xMax = 127;
 
@@ -143,7 +142,7 @@ void setup()
     hygiene.icon = poop;
     hygiene.currentValue = 50;
     hygiene.highScore = 0;
-    hygiene.game = &Runner_Game;
+    hygiene.game = &Shit_Storm;
         
     sleepiness.name = "Sleepiness";
     sleepiness.icon = Sleep;
@@ -155,7 +154,7 @@ void setup()
     love.icon = heart;
     love.currentValue = 50;
     love.highScore = 0;
-    love.game = &Runner_Game;    
+    love.game = &Petting_Game;    
         
 	general.name = "general";
     general.icon = faceHoles[0];
@@ -168,7 +167,7 @@ void setup()
     
 void loop()
 {
-	main_menu();
+  main_menu();
 }
 
 /*----------------------------------------------------------*/
@@ -312,6 +311,13 @@ void main_menu(){
 		love.icon = heart_inv;
 		
 		LightLED(love.currentValue);
+		
+		if (lBtn1) {
+				LightLED(0);
+				score = Petting_Game();
+				love.currentValue += _min(score, 100 - love.currentValue);
+				love.highScore = _max(score, hygiene.highScore);
+		}
 	}
 
 	// Bound Check for Facehole
@@ -434,9 +440,9 @@ int Shit_Storm(void){
   
   //-------images-----------
   //char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
-  char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //large food
-  //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
-  char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
+  char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //poop
+  //char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};//little guy
+  char runner[] = {0x7E, 0x81, 0x97, 0x91, 0x97, 0x99, 0x47, 0x3C};//hand
   
   //------location-----------
   //int obsX[5], obsY[5];
@@ -456,7 +462,8 @@ int Shit_Storm(void){
   
   int lose = 0;
   int score = 0;
-  int pt_val = 1;
+  int pt_val = 3;
+  int pt_count = 0;
   
   //INTRODUCTION#############################################  
   OrbitOledClear();
@@ -521,8 +528,15 @@ int Shit_Storm(void){
             if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
           ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))&&
           ptY[i] < size/2){
-            score += pt_val;
-            if(ptY[i] == 0) poopcount -= 1;
+            
+            pt_count++; //increment the score when enough poop is colected
+            if(pt_count == pt_val){
+              pt_count = 0;
+              score++;
+            }
+            
+            if(ptY[i] == 0) poopcount -= 1; //if it has landed on the floor before being caught, the count of floor-poop
+                                            //needs to be decreased
             ptY[i] = -size;//to signal to reset in the movement block
           }
     }
@@ -768,8 +782,100 @@ void mini_game3(){
 /* lovestat */
 /* petting. */
 /* -------------------------------------------*/
-void mini_game4(){
+int Petting_Game() {
+	//setting initial conditions 
+	int score = 0;
+	int minScore = 0;
+	int maxScore = 999;
+	int xFace = xMax / 2;
+	int yFace = 11;
+	int xSpeed = 2;
+	int lowerPettingBound = 40;
+	int upperPettingBound = 88;
+	long lBtn1;
+	
+	OrbitOledClear();
+	OrbitOledSetCursor(0, 0);
+	OrbitOledPutString("Petting Game");
+	
+	OrbitOledSetCursor(0, 1);
+	OrbitOledPutString("Goal: Pet him!");
+	
+	OrbitOledSetCursor(0, 2);
+	OrbitOledPutString("Pet by: SHAKING");
+	
+	OrbitOledSetCursor(0, 3);
+	OrbitOledPutString("Quit with: BTN");
 
+	OrbitOledUpdate();
+	
+	while(1) {
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		if (lBtn1) {
+			OrbitOledClear();
+			delay(1000);
+			break;
+		}
+	}
+
+	
+	while (lBtn1 != 1) {
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		
+		//setDrawing();----------------------------------------------
+
+
+		
+		//draw the score
+		OrbitOledSetCursor(0,0);
+		OrbitOledPutString("Score: ");
+		OrbitOledPutNumber(score);
+		
+		//draw a range within which user must pet
+		OrbitOledSetCursor(0, 4);
+		OrbitOledPutString("____|______|____");
+
+		//draw the pos of faceHole
+		OrbitOledMoveTo(xFace, yFace);
+		OrbitOledPutBmp(20, 20, faceHole);
+
+                //end setDrawing---------------------------------------------
+                //updateFacePos----------------------------------------------
+		if (xFace > xMax || xFace < xMin) {
+			xSpeed *= -1;
+		}
+		
+		xFace += xSpeed;
+		//end UpdateFacePos-------------------------------------------
+
+		if (getAccel(chY0Addr) < 0){
+			//checkforValidPetting();-----------------------------
+                  if (lowerPettingBound < xFace && xFace < upperPettingBound) {
+			if (score < maxScore) {
+				score++;
+				OrbitOledSetCursor(1, 0);
+				OrbitOledPutString("Yay!");
+				delay(2000);
+			}
+		}
+		
+		else {
+			if (score > minScore) {
+				score--;
+				OrbitOledSetCursor(1, 0);
+				OrbitOledPutString("Oops!");
+				delay(2000);
+			}
+		}
+                   //end CheckforValidPetting-------------------------------
+		}
+		
+                OrbitOledUpdate();
+		delay(1);
+		OrbitOledClear();
+	}
+	
+	return score;
 }
 
 /*---------------------------------------------------------------*/
