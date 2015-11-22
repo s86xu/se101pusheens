@@ -10,17 +10,6 @@ extern"C" {
 }
 
 
-/* ------------------------------------------------------------ */
-/*   			 Local Type Definitions   	 */
-/* ------------------------------------------------------------ */
-#define DEMO_0   	 0
-#define DEMO_1   	 2
-#define DEMO_2   	 1
-#define DEMO_3   	 3
-#define RED_LED   GPIO_PIN_1
-#define BLUE_LED  GPIO_PIN_2
-#define GREEN_LED GPIO_PIN_3
-
 char I2CGenTransmit(char * pbData, int cSize, bool fRW, char bAddr);
 bool I2CGenIsNotIdle();
 
@@ -30,8 +19,6 @@ bool I2CGenIsNotIdle();
 /* ------------------------------------------------------------ */
 extern int xchOledMax; // defined in OrbitOled.c
 extern int ychOledMax; // defined in OrbitOled.c
-
-
 
 
 /* ------------------------------------------------------------ */
@@ -117,6 +104,7 @@ void setup()
 	xMin = 0;
 	xMax = 127;
 
+	// Stats init
 	hunger.name = "Hunger";
     hunger.icon = food;
     hunger.currentValue = 50;
@@ -143,10 +131,12 @@ void setup()
         
 }
 
+
+// Start of Loop
     
 void loop()
 {
-  main_menu();
+	main_menu();
 }
 
 /*----------------------------------------------------------*/
@@ -169,16 +159,16 @@ void main_menu(){
 	int frame_num = 0;
 	int score = 0;
 
-	
+	// Main Menu Loop Start
 	while(1){
   
 	// Poten operations with menu selecting
 	poten = getPoten();
 	lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 	
-	frame_num++;
 	
-
+	// Frame counting and Decay Mechanic
+	frame_num++;
 	
 	if(!(frame_num % 800)){
                 //nice flash when it decays, remove?
@@ -212,15 +202,14 @@ void main_menu(){
 		}
 	}
 	
-	
-	
+	// Stat Screen trigger
 	if(GPIOPinRead(BTN2Port, BTN2)){
 		num_stat();
 	}
 	
 	float velocity_y = (hunger.currentValue + hygiene.currentValue + sleepiness.currentValue + love.currentValue)/200.0;
 	
-	// Menu Selection Startv -----------------------------
+	// Menu Selection Start -----------------------------
 	if(poten <= 819){
 		hygiene.icon = poop;
 		hunger.icon = food_inv;
@@ -276,8 +265,8 @@ void main_menu(){
 		
 		LightLED(love.currentValue);
 	}
-// modified this part but still needs testing 
 
+	// Bound Check for Facehole
 	if (face_y > main_yMax) {
 		face_y = main_yMax;
 		velocity_y_dir *= -1;
@@ -298,10 +287,11 @@ void main_menu(){
 		velocity_x *= -1;
 	}
 	
+	// position Update
 	face_x += velocity_x;
 	face_y += velocity_y*velocity_y_dir;
 	
-    
+    // Screen Update
 	OrbitOledClear();
     
 	OrbitOledMoveTo(0, 0);
@@ -324,12 +314,8 @@ void main_menu(){
   }
 }
 
-
-
-
-
-/* --------------------------------------*/
-/* displays all the stats in numerical form*/
+/* -------------------------------------------*/
+/*  displays all the stats in numerical form  */
 /* -------------------------------------------*/
 void num_stat(){
 	
@@ -349,7 +335,6 @@ void num_stat(){
 			OrbitOledPutString("Hyg H Scr: ");
 			OrbitOledPutNumber(hygiene.highScore);
 			OrbitOledPutString("  ");
-		
 		
 			OrbitOledSetCursor(0 ,2);
 			OrbitOledPutString("Slp H Scr: ");
@@ -385,14 +370,14 @@ void num_stat(){
 		OrbitOledUpdate();
 	}
 	
-        while(GPIOPinRead(BTN2Port, BTN2)){}
+    while(GPIOPinRead(BTN2Port, BTN2)){}
 }
 
 
-/* --------------------------------------*/
-/* Hygiene stat */
-/* clean poop */
 /* -------------------------------------------*/
+/* 					Hygiene stat 		    	*/
+/* 					clean poop 					*/
+/* ------------------------------------------ -*/
 
 int Shit_Storm(void){
   //----------constants-----
@@ -534,10 +519,12 @@ int Shit_Storm(void){
   }
   return score;
 }
-/* --------------------------------------*/
-/* hunger stat */
+
+/* ---------------------------------------------*/
+/* 					hunger stat 				*/
 /* collect food from dropping foods while avoiding stuff */
 /* -------------------------------------------*/
+
 int Runner_Game(void){
   //-------images-----------
   char obs[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
@@ -706,31 +693,6 @@ int Runner_Game(void){
       }
     }
     
-    /*
-    //Jumping stuff Mk 1 (aka flying)
-    lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-    if(lBtn1 == BTN1) {//button is pressed
-      if (!jump){
-        jump = 1;
-        jumptime = count;
-      }
-    }else if(jump){
-      jump = 0;
-    }
-    
-    if(!((count - jumptime)%jumpspd)){
-      if(jump){
-        plY++;
-        if (plY > yMax - size){
-          plY = yMax - size;
-        }
-      }
-      else if (plY > 0){
-        plY --;
-      }
-    }
-    */
-    
     lBtn1 = GPIOPinRead(BTN2Port, BTN2);
     if(lBtn1 == BTN2){
       lose = 1;
@@ -763,6 +725,8 @@ void mini_game4(){
 }
 
 /*---------------------------------------------------------------*/
+/* LED Control */
+/* ---------------------------------------------------------------*/
 void LightLED(int n){
 	
 	if(n >= 25){
@@ -793,7 +757,8 @@ void LightLED(int n){
 
 
 /* ------------------------------------------------------------ */
-
+/*				similar to OrbitOledPutString					*/
+/* ------------------------------------------------------------- */
 void OrbitOledPutNumber(int num){
   int length = 1;
   int tempnum;
@@ -834,18 +799,8 @@ void OrbitOledPutNumber(int num){
   
 }
 
+
 /***    CheckSwitches()
- **
- **    Parameters:
- **   	 none
- **
- **    Return Value:
- **   	 none
- **
- **    Errors:
- **   	 none
- **
- **    Description:
  **   	 Return the state of the Switches
  */
 char CheckSwitches() {
@@ -880,6 +835,7 @@ long getPoten(){
  
   return ulAIN0;
 }
+
 
 short getAccel(int Addr) {
 
@@ -946,22 +902,10 @@ short getAccel(int Addr) {
 
 /* ------------------------------------------------------------ */
 /***    DeviceInit
- **
- **    Parameters:
- **   	 none
- **
- **    Return Value:
- **   	 none
- **
- **    Errors:
- **   	 none
- **
- **    Description:
  **   	 Initialize I2C Communication, and GPIO
  */
  
-void DeviceInit()
-{
+void DeviceInit(){
   /*
    * First, Set Up the Clock.
    * Main OSC   	   -> SYSCTL_OSC_MAIN
