@@ -795,28 +795,44 @@ int Petting_Game() {
 			break;
 		}
 	}
+
 	
-	void setDrawing() {
-		//draw the pos of faceHole
-		OrbitOledMoveTo(xFace, yFace);
-		OrbitOledPutBmp(20, 20, faceHole);
+	while (lBtn1 != 1) {
+		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+		
+		//setDrawing();----------------------------------------------
+
+
 		
 		//draw the score
 		OrbitOledSetCursor(0,0);
-		OrbitOledPutString("Score: ")
+		OrbitOledPutString("Score: ");
 		OrbitOledPutNumber(score);
 		
 		//draw a range within which user must pet
 		OrbitOledSetCursor(0, 4);
 		OrbitOledPutString("____|______|____");
-	}	
-	
-	void checkForValidPetting() {
-		if (lowerPettingPound < xFace && xFace < upperPettingBound) {
+
+		//draw the pos of faceHole
+		OrbitOledMoveTo(xFace, yFace);
+		OrbitOledPutBmp(20, 20, faceHole);
+
+                //end setDrawing---------------------------------------------
+                //updateFacePos----------------------------------------------
+		if (xFace > xMax || xFace < xMin) {
+			xSpeed *= -1;
+		}
+		
+		xFace += xSpeed;
+		//end UpdateFacePos-------------------------------------------
+
+		if (getAccel(chY0Addr) < 0){
+			//checkforValidPetting();-----------------------------
+                  if (lowerPettingBound < xFace && xFace < upperPettingBound) {
 			if (score < maxScore) {
 				score++;
 				OrbitOledSetCursor(1, 0);
-				OrbitOledPutString("Yay!")
+				OrbitOledPutString("Yay!");
 				delay(2000);
 			}
 		}
@@ -829,27 +845,10 @@ int Petting_Game() {
 				delay(2000);
 			}
 		}
-	}
-	
-	void updateFacePos() {
-		if (xFace > xMax || xFace < xMin) {
-			xSpeed *= -1;
+                   //end CheckforValidPetting-------------------------------
 		}
 		
-		xFace += xSpeed;
-		
-	}
-	
-	while (lBtn1 != 1) {
-		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-		
-		setDrawing();
-		updateFacePos();
-		
-		if (getAccel(chY0Addr) < 0){
-			checkforValidPetting();
-		}
-		
+                OrbitOledUpdate();
 		delay(1);
 		OrbitOledClear();
 	}
