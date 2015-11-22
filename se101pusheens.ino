@@ -180,7 +180,7 @@ void main_menu(){
 	
 
 	
-	if(!(frame_num % 100)){
+	if(!(frame_num % 800)){
                 //nice flash when it decays, remove?
                 LightLED(100);
                 delay(100);
@@ -394,8 +394,145 @@ void num_stat(){
 /* clean poop */
 /* -------------------------------------------*/
 
-void mini_game1(){
+int Shit_Storm(void){
+  //----------constants-----
+  const int mxp = 10;
+  long poten;
+  
+  //-------images-----------
+  //char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
+  char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //large food
+  //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
+  char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
+  
+  //------location-----------
+  //int obsX[5], obsY[5];
+  int ptX[mxp], ptY[mxp];
+  int plX = 8, plY = 0;
+  
+  //gameplay values
+  int size = 8;
+  int spacing = size;
+  int poopmax = 3;
+  int poopcount = 0;
+  
+  //Time-keeping values
+  int spd = 12;
+  int framerate = 1000/60;
+  int count = 0;
+  
+  int lose = 0;
+  int score = 0;
+  int pt_val = 1;
+  
+  //INTRODUCTION#############################################  
+  OrbitOledClear();
+  OrbitOledSetCursor(0, 0);
+  OrbitOledPutString("Catching Game");
+  OrbitOledSetCursor(0, 1);
+  OrbitOledPutString("Collect:");
+  OrbitOledSetCursor(0, 3);
+  OrbitOledPutString("Move w\\:");
+  OrbitOledSetCursor(12, 3);
+  OrbitOledPutString("DIAL");
+  
+  OrbitOledMoveTo(xMax-2*size+1, size*1);
+  OrbitOledPutBmp(size,size,point);
+  
+  OrbitOledUpdate();
+  
+  
+  do{
+        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+  }while(lBtn1 == BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is pressed
+  do{
+        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
+  }while(lBtn1 != BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is not pressed
+  
+  
+  //MAIN GAME################################################
+  //initializing obstacles
 
+  for (int i = 0; i < mxp; i++){
+    ptY[i] = plY + size + size + (spacing+size)*i;
+    ptX[i] = random((xMax/size))*size;
+  }
+
+  
+  while (!lose){//main game loop
+    if(!(count % framerate)){
+      //draw everything
+      OrbitOledClear();
+      
+      for(int i = 0; i < mxp; i++){//drawing the poop? do we still need these?
+        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size + 1);
+        OrbitOledPutBmp(size,size,point);
+      }
+      
+      OrbitOledMoveTo(plX, yMax-plY-size + 1);
+      OrbitOledPutBmp(size,size,runner);
+      //putting the score
+      OrbitOledSetCursor(6, 0);
+      OrbitOledPutString("Score: ");
+      OrbitOledPutNumber(score); 
+      
+      
+      OrbitOledUpdate();
+    }
+
+
+    //collision checks here, because why not
+    for(int i = 0; i < mxp; i++){
+      // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
+      //can only collect when they are on the ground, adds some challenge
+            if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
+          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))&&
+          ptY[i] < size/2){
+            score += pt_val;
+            if(ptY[i] == 0) poopcount -= 1;
+            ptY[i] = -size;//to signal to reset in the movement block
+          }
+    }
+
+    //poop falling movement
+    if(!(count % spd)){ 
+      for(int i = 0; i < mxp; i++){//moving the points
+        if (ptY[i] > 0){
+          ptY[i] -= 1;
+          if (ptY[i] == 0){//if it's zero
+            poopcount += 1;
+            if (poopcount >= poopmax){
+              lose = 1;
+            }
+          }
+        }else if (ptY[i] < 0){
+          ptX[i] = random((xMax/size))*size;
+          ptY[i] = yMax;//find the highest poop, and place above it
+          for (int j= 0; j < mxp; j++)
+            if (ptY[j] > ptY[i])
+              ptY[i] = ptY[j];
+          ptY[i] += size + spacing; 
+        }
+      }
+    }
+    
+    //moving the player
+    poten = getPoten();
+    plX = (int) (((double)poten / 4095)*(xMax-size));
+    
+    lBtn1 = GPIOPinRead(BTN2Port, BTN2);
+    if(lBtn1 == BTN2){
+      lose = 1;
+    }
+    count ++;
+    delay(1);//should probably use a clock and measure time between frames, this is probably good enough
+  }
+  if (lBtn1 != BTN2){
+    delay(500);
+  }else{
+    while(GPIOPinRead(BTN2Port, BTN2)){}
+  }
+  return score;
 }
 /* --------------------------------------*/
 /* hunger stat */
@@ -1041,145 +1178,4 @@ bool I2CGenIsNotIdle() {
 
   return !I2CMasterBusBusy(I2C0_BASE);
 
-}
-
-int Shit_Storm(void){
-  //----------constants-----
-  const int mxp = 10;
-  long poten;
-  
-  //-------images-----------
-  //char obs[] = {0x00, 0x7E, 0x42, 0x42, 0x42, 0x42, 0x7E, 0x00}; //empty box
-  char point[] = {0xC0, 0xE5, 0xF2, 0xF8, 0xFC, 0xF0, 0xE5, 0xC2};  //large food
-  //char point[] = {0x00, 0x3C, 0x4E, 0x4A, 0x4A, 0x4E, 0x3C, 0x00};//small food
-  char runner[] = {0xFF, 0x81, 0x89, 0xA1, 0xA1, 0xA1, 0x81, 0xFF};
-  
-  //------location-----------
-  //int obsX[5], obsY[5];
-  int ptX[mxp], ptY[mxp];
-  int plX = 8, plY = 0;
-  
-  //gameplay values
-  int size = 8;
-  int spacing = size;
-  int poopmax = 3;
-  int poopcount = 0;
-  
-  //Time-keeping values
-  int spd = 12;
-  int framerate = 1000/60;
-  int count = 0;
-  
-  int lose = 0;
-  int score = 0;
-  int pt_val = 1;
-  
-  //INTRODUCTION#############################################  
-  OrbitOledClear();
-  OrbitOledSetCursor(0, 0);
-  OrbitOledPutString("Catching Game");
-  OrbitOledSetCursor(0, 1);
-  OrbitOledPutString("Collect:");
-  OrbitOledSetCursor(0, 3);
-  OrbitOledPutString("Move w\\:");
-  OrbitOledSetCursor(12, 3);
-  OrbitOledPutString("DIAL");
-  
-  OrbitOledMoveTo(xMax-2*size+1, size*1);
-  OrbitOledPutBmp(size,size,point);
-  
-  OrbitOledUpdate();
-  
-  
-  do{
-        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 == BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is pressed
-  do{
-        lBtn1 = GPIOPinRead(BTN1Port, BTN1);
-  }while(lBtn1 != BTN1 && BTN2 != GPIOPinRead(BTN2Port, BTN2));//while button is not pressed
-  
-  
-  //MAIN GAME################################################
-  //initializing obstacles
-
-  for (int i = 0; i < mxp; i++){
-    ptY[i] = plY + size + size + (spacing+size)*i;
-    ptX[i] = random((xMax/size))*size;
-  }
-
-  
-  while (!lose){//main game loop
-    if(!(count % framerate)){
-      //draw everything
-      OrbitOledClear();
-      
-      for(int i = 0; i < mxp; i++){//drawing the poop? do we still need these?
-        OrbitOledMoveTo(ptX[i], yMax - ptY[i] - size + 1);
-        OrbitOledPutBmp(size,size,point);
-      }
-      
-      OrbitOledMoveTo(plX, yMax-plY-size + 1);
-      OrbitOledPutBmp(size,size,runner);
-      //putting the score
-      OrbitOledSetCursor(6, 0);
-      OrbitOledPutString("Score: ");
-      OrbitOledPutNumber(score); 
-      
-      
-      OrbitOledUpdate();
-    }
-
-
-    //collision checks here, because why not
-    for(int i = 0; i < mxp; i++){
-      // '<' used instead of '<=' used in some cases to give wiggle room; scritcly speaking should all be '<='
-      //can only collect when they are on the ground, adds some challenge
-            if(((plY >= ptY[i] && plY < ptY[i]+size-1)||(plY+size-1 > ptY[i] && plY+size-1 <= ptY[i]+size-1))&&
-          ((plX >= ptX[i] && plX < ptX[i]+size-1)||(plX+size-1 > ptX[i] && plX+size-1 <= ptX[i]+size-1))&&
-          ptY[i] < size/2){
-            score += pt_val;
-            if(ptY[i] == 0) poopcount -= 1;
-            ptY[i] = -size;//to signal to reset in the movement block
-          }
-    }
-
-    //poop falling movement
-    if(!(count % spd)){ 
-      for(int i = 0; i < mxp; i++){//moving the points
-        if (ptY[i] > 0){
-          ptY[i] -= 1;
-          if (ptY[i] == 0){//if it's zero
-            poopcount += 1;
-            if (poopcount >= poopmax){
-              lose = 1;
-            }
-          }
-        }else if (ptY[i] < 0){
-          ptX[i] = random((xMax/size))*size;
-          ptY[i] = yMax;//find the highest poop, and place above it
-          for (int j= 0; j < mxp; j++)
-            if (ptY[j] > ptY[i])
-              ptY[i] = ptY[j];
-          ptY[i] += size + spacing; 
-        }
-      }
-    }
-    
-    //moving the player
-    poten = getPoten();
-    plX = (int) (((double)poten / 4095)*(xMax-size));
-    
-    lBtn1 = GPIOPinRead(BTN2Port, BTN2);
-    if(lBtn1 == BTN2){
-      lose = 1;
-    }
-    count ++;
-    delay(1);//should probably use a clock and measure time between frames, this is probably good enough
-  }
-  if (lBtn1 != BTN2){
-    delay(500);
-  }else{
-    while(GPIOPinRead(BTN2Port, BTN2)){}
-  }
-  return score;
 }
