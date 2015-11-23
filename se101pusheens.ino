@@ -807,6 +807,7 @@ int Petting_Game() {
 	OrbitOledPutString("Quit with: BTN");
 
 	OrbitOledUpdate();
+	delay(500);
 	
 	while(1) {
 		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
@@ -851,18 +852,18 @@ int Petting_Game() {
                 if (lowerPettingBound < xFace && xFace < upperPettingBound) {
 			if (score < maxScore) {
 				score++;
-				OrbitOledSetCursor(1, 0);
+				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Yay!");
-				delay(2000);
+				delay(500);
 			}
 		}
 		
 		else {
 			if (score > minScore) {
 				score--;
-				OrbitOledSetCursor(1, 0);
+				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Oops!");
-				delay(2000);
+				delay(500);
 			}
 		}
                   //end CheckforValidPetting-------------------------------
