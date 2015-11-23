@@ -823,11 +823,11 @@ int Petting_Game() {
 		lBtn1 = GPIOPinRead(BTN2Port, BTN2);
 		
 		//setDrawing();----------------------------------------------
-                //draw the pos of faceHole
+        //draw the pos of faceHole
 		OrbitOledMoveTo(xFace, yFace);
 		OrbitOledPutBmp(20, 20, faceHole);
 
-                //draw a range within which user must pet
+        //draw a range within which user must pet
 		OrbitOledSetCursor(0, 4);
 		OrbitOledPutString("____|______|____");
 		
@@ -837,38 +837,42 @@ int Petting_Game() {
 		OrbitOledPutNumber(score);
 		
 
-                //end setDrawing---------------------------------------------
+        //end setDrawing---------------------------------------------
                 
-                //updateFacePos-----------------------------------------------
-                if (xFace > xMax || xFace < xMin) {
+        //updateFacePos-----------------------------------------------
+        if (xFace + 20 > xMax || xFace < xMin) {
 			xSpeed *= -1;
 		}
 		
 		xFace += xSpeed;
 		//end UpdateFacePos-------------------------------------------
 
-		if (getAccel(chY0Addr) < 0){
-		  //checkforValidPetting();--------------------------------
-                if (lowerPettingBound < xFace && xFace < upperPettingBound) {
-			if (score < maxScore) {
-				score++;
+		if (getAccel(chY0Addr) < 0) {
+		//checkforValidPetting();--------------------------------
+			if (lowerPettingBound < xFace + 10 && xFace + 10 < upperPettingBound) {
+				
+				if (score < maxScore) {
+					score++;
+				}
+				
 				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Yay!");
 				delay(500);
 				xFace = 0;
 			}
-		}
-		
-		else {
-			if (score > minScore) {
-				score--;
+			
+			else {
+				if (score > minScore) {
+					score--;
+				}
+				
 				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Oops!");
 				delay(500);
 				xFace = 0;
 			}
-		}
-                  //end CheckforValidPetting-------------------------------
+			
+        //end CheckforValidPetting-------------------------------
 		}
 
 		OrbitOledUpdate();
