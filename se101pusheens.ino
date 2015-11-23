@@ -855,6 +855,7 @@ int Petting_Game() {
 				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Yay!");
 				delay(500);
+				xFace = 0;
 			}
 		}
 		
@@ -864,6 +865,7 @@ int Petting_Game() {
 				OrbitOledSetCursor(0, 1);
 				OrbitOledPutString("Oops!");
 				delay(500);
+				xFace = 0;
 			}
 		}
                   //end CheckforValidPetting-------------------------------
