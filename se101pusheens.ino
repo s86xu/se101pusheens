@@ -823,13 +823,14 @@ int Petting_Game() {
 		lBtn1 = GPIOPinRead(BTN2Port, BTN2);
 		
 		//setDrawing();----------------------------------------------
-        //draw the pos of faceHole
-		OrbitOledMoveTo(xFace, yFace);
-		OrbitOledPutBmp(20, 20, faceHole);
 
         //draw a range within which user must pet
 		OrbitOledSetCursor(0, 4);
 		OrbitOledPutString("____|______|____");
+		
+		//draw the pos of faceHole
+		OrbitOledMoveTo(xFace, yFace);
+		OrbitOledPutBmp(20, 20, faceHole);
 		
 		//draw the score
 		OrbitOledSetCursor(0,0);
