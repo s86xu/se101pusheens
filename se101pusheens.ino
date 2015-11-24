@@ -801,7 +801,7 @@ int Petting_Game() {
 	OrbitOledPutString("Goal: Pet him!");
 	
 	OrbitOledSetCursor(0, 2);
-	OrbitOledPutString("Pet by: SHAKING");
+	OrbitOledPutString("Pet by: FWD TILT");
 	
 	OrbitOledSetCursor(0, 3);
 	OrbitOledPutString("Quit with: BTN");
