@@ -302,6 +302,13 @@ void main_menu(){
 		love.icon = heart;
 		
 		LightLED(sleepiness.currentValue);
+		
+		if (lBtn1) {
+			LightLED(0);
+			score = Simon_Says();
+			sleepiness.currentValue += _min(score, 100 - sleepiness.currentValue);
+			sleepiness.highScore = _max(score, love.highScore);
+		}
 	}
 	else{
 		hygiene.icon = poop;
@@ -773,9 +780,9 @@ int Runner_Game(void){
 /* sleepiness stat */
 /* simon says? */
 /* -------------------------------------------*/
-void mini_game3(){
-
-
+int Simon_Says(){
+	/*just this left to code, returns 0 for now*/
+	return 0;
 }
 /* --------------------------------------*/
 /* lovestat */
