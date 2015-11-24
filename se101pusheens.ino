@@ -881,6 +881,7 @@ int Petting_Game() {
 		OrbitOledClear();
 	}
 	
+	delay(500); 
 	OrbitOledClear();
 	return score;
 }
