@@ -307,7 +307,7 @@ void main_menu(){
 			LightLED(0);
 			score = Simon_Says();
 			sleepiness.currentValue += _min(score, 100 - sleepiness.currentValue);
-			sleepiness.highScore = _max(score, love.highScore);
+			sleepiness.highScore = _max(score, sleepiness.highScore);
 		}
 	}
 	else{
@@ -780,10 +780,7 @@ int Runner_Game(void){
 /* sleepiness stat */
 /* simon says? */
 /* -------------------------------------------*/
-int Simon_Says(){
-	/*just this left to code, returns 0 for now*/
-	return 0;
-}
+
 /* --------------------------------------*/
 /* lovestat */
 /* petting. */
@@ -983,10 +980,6 @@ char CheckSwitches() {
   lSwt2 = GPIOPinRead(SWT2Port, SWT2);
 
   chSwtCur = (lSwt1 | lSwt2) >> 6;
-
-  if(chSwtCur != chSwtPrev) {
-	fClearOled = true;
-  }
 
   return chSwtCur;
 
@@ -1291,4 +1284,136 @@ bool I2CGenIsNotIdle() {
 
   return !I2CMasterBusBusy(I2C0_BASE);
 
+}
+
+int Simon_Check(double ts){
+    const int threshold = 150;
+    int temp;
+    
+    if(GPIOPinRead(BTN2Port, BTN2)) return -1;//button 2
+    if(CheckSwitches() == 1) return 1;//left switch up
+    if(CheckSwitches() == 2) return 2;//right switch up;
+    if(GPIOPinRead(BTN1Port, BTN1)) return 3;//button 2
+    temp = getPoten();
+    if(temp < 2048 - ts*550) return 4;//poten left
+    if(temp > 2048 + ts*550) return 5;//poten right
+    if(getAccel(chX0Addr) > ts*threshold) return 6;//tilt left
+    if(getAccel(chX0Addr) < -ts*threshold) return 7;//tilt right
+    if(getAccel(chY0Addr) > ts*threshold) return 8;//tilt back
+    if(getAccel(chY0Addr) < -ts*threshold) return 9;//tilt forward
+    //if(getAccel(chZ0Addr) > 290 +threshold/4) return 10;
+    //if(getAccel(chZ0Addr) < 290 -threshold/4) return 11;
+    return 0;
+}
+
+
+int Simon_Says(){
+  int time;
+  const int n = 10;
+  char inst[n][17] = {"do nothing",
+                            "left switch up",
+                            "right switch up",
+                            "push the button",
+                            "move dial left",
+                            "move dial right",
+                            "tilt left",
+                            "tilt right",
+                            "tilt back",
+                            "tilt forward"};
+   char rst[n][17] = {"do nothing",
+                            "switches down",
+                            "switches down",
+                            "release btn",
+                            "dial to centre",
+                            "dial to centre",
+                            "hold level",
+                            "hold level",
+                            "hold level",
+                            "hold level"};
+  int instIndex;
+  int SimonHi;
+  int action;
+  
+  int score = 0;
+  int lose = 0;
+  
+  //intro text
+  
+  
+  
+  //main game loop
+  while(!lose){
+    
+    //reset eveything to zero;
+    OrbitOledClear();
+    OrbitOledSetCursor(0,0);
+    OrbitOledPutString("Evythng to Dflt:");
+    OrbitOledUpdate();
+    while (action = Simon_Check(0.2)){
+      OrbitOledClear();
+      OrbitOledSetCursor(0,0);
+      OrbitOledPutString("Evythng to Rest:");
+      OrbitOledSetCursor(0,1);
+      OrbitOledPutString(rst[action]);
+      OrbitOledSetCursor(0,2);
+      OrbitOledPutString("Score: ");
+      OrbitOledPutNumber(score);
+      OrbitOledUpdate();
+      delay(15);
+    }
+    
+    //give instruction
+    instIndex = random(n-1)+1;
+    SimonHi = random(4);
+    
+    OrbitOledClear();
+    if(SimonHi){
+      OrbitOledSetCursor(0,0);
+      OrbitOledPutString("Simon Says:");
+    }
+    OrbitOledSetCursor(0,1);
+    OrbitOledPutString(inst[instIndex]);
+    OrbitOledSetCursor(0,2);
+    OrbitOledPutString("Score: ");
+    OrbitOledPutNumber(score);
+    OrbitOledUpdate();
+    delay(1000);
+    
+    //read instruction loop
+    do{
+      action = Simon_Check(1); 
+    }while(!action);
+    
+    //reaction to action
+    if(SimonHi){
+      if (action == instIndex) score++;//put some confirmiry text on screen
+      else {
+        if(action != -1){
+          OrbitOledClear();
+          OrbitOledSetCursor(0,1);
+          OrbitOledPutString("Wrong Action!");
+          delay(2000);
+        }
+        lose = 1;
+        }
+     }
+     else{
+      if (action != instIndex && action != -1) score++;//put some confirmiry text on screen
+      else {
+        if(action != -1){
+          OrbitOledClear();
+          OrbitOledSetCursor(0,1);
+          OrbitOledPutString("Simon Didn't Say!");
+          delay(2000);
+        }
+        lose = 1;
+        }  
+       
+     }
+    delay(10);
+  }
+  
+  while(GPIOPinRead(BTN2Port, BTN2));
+  
+  return score;
 }
