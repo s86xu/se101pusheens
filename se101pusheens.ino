@@ -832,7 +832,7 @@ int Simon_Says(){
   int score = 0;
   int lose = 0;
   
-  while(GPIOPinRead(BTN1Port, BTN1));
+  while(GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
   //intro text
   OrbitOledClear();
   OrbitOledSetCursor(0,0);
@@ -842,16 +842,26 @@ int Simon_Says(){
   OrbitOledSetCursor(0,2);
   OrbitOledPutString("do actn on scrn");
   
-  while(!GPIOPinRead(BTN1Port, BTN1));
-  while(GPIOPinRead(BTN1Port, BTN1));
+  while(!GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
+  while(GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
   
   OrbitOledSetCursor(0,1);
   OrbitOledPutString("if no simon says");
   OrbitOledSetCursor(0,2);
   OrbitOledPutString("do other actn        ");
   
-  while(!GPIOPinRead(BTN1Port, BTN1));
-  while(GPIOPinRead(BTN1Port, BTN1));
+  while(!GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
+  while(GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
+  
+  OrbitOledSetCursor(0,1);
+  OrbitOledPutString("Put evrytng to    ");
+  OrbitOledSetCursor(0,2);
+  OrbitOledPutString("rest pstn b\\w ");
+  OrbitOledSetCursor(0,3);
+  OrbitOledPutString("instrctns ");
+  
+  while(!GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
+  while(GPIOPinRead(BTN1Port, BTN1) && !(GPIOPinRead(BTN2Port, BTN2)));
   //main game loop
   while(!lose){
     
@@ -860,7 +870,7 @@ int Simon_Says(){
     OrbitOledSetCursor(0,0);
     OrbitOledPutString("Evythng to Dflt:");
     OrbitOledUpdate();
-    while (action = Simon_Check(0.2)){
+    while ((action = Simon_Check(0.2)) && action != -1){
       OrbitOledClear();
       OrbitOledSetCursor(0,0);
       OrbitOledPutString("Evythng to Rest:");
@@ -888,12 +898,14 @@ int Simon_Says(){
     OrbitOledPutString("Score: ");
     OrbitOledPutNumber(score);
     OrbitOledUpdate();
-    delay(500);
-    
+    if(action != -1){
+      delay(500);
+    }
     //read instruction loop
-    do{
-      action = Simon_Check(1); 
-    }while(!action);
+    if(action != -1)
+      do{
+        action = Simon_Check(1); 
+      }while(!action);
     
     //reaction to action
     if(SimonHi){
@@ -960,7 +972,7 @@ int Petting_Game() {
 	OrbitOledUpdate();
 	delay(500);
 	
-	while(1) {
+	while(1 && !(GPIOPinRead(BTN2Port, BTN2))) {
 		lBtn1 = GPIOPinRead(BTN1Port, BTN1);
 		if (lBtn1) {
 			OrbitOledClear();
